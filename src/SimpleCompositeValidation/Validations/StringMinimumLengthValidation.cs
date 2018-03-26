@@ -18,7 +18,7 @@ namespace SimpleCompositeValidation.Validations
         {
             if (message == null)
             {
-                message = $"{groupName} requires at least {MinimumLength} characters";
+                message = $"{groupName} requires at least {minimumLength} characters";
             }
             MinimumLength = minimumLength;
             Message = message;

@@ -26,8 +26,8 @@ namespace SimpleCompositeValidation.Validations
         {
             if (message == null)
             {
-                var nullText = acceptNull ? string.Empty : "not";
-                message = $"{groupName} must {nullText} be null";
+                var nullText = acceptNull ? string.Empty : "not ";
+                message = $"{groupName} must {nullText}be null";
             }
 
             GroupName = groupName;

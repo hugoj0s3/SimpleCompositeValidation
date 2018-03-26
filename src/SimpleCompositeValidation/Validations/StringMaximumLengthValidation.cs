@@ -18,7 +18,7 @@ namespace SimpleCompositeValidation.Validations
         {
             if (message == null)
             {
-                message = $"{groupName} the characters length limit is {MaximumLength}";
+                message = $"{groupName} the characters length limit is {maximumLength}";
             }
             MaximumLength = maximumLength;
             Message = message;
@@ -26,10 +26,10 @@ namespace SimpleCompositeValidation.Validations
 
         public StringMaximumLengthValidation(
             string groupName, 
-            int minimumLength, 
+            int maximumLength, 
             string message = null, 
             int severity = 1) 
-            : this(groupName, null, minimumLength, message, severity)
+            : this(groupName, null, maximumLength, message, severity)
         {
         }
 

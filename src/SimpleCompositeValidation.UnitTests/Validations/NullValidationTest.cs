@@ -35,10 +35,10 @@ namespace SimpleCompositeValidation.UnitTests.Validations
         public void Update_PassingNewObject_ItUpdateItSelfToAnInvalidValidation()
         {
             // Arrange
-            const string groupName = "NullObject";
-            const string message = "TestError";
-            const int severtiy = 999;
-            var validation = new NullValidation<object>(groupName, null, true, message, severtiy);
+            const string groupName = "Object";
+            var defaultMessage = $"{groupName} must be null";
+            const int defaultSevertiy = 1;
+            var validation = new NullValidation<object>(groupName, null, true);
 
             // Act
             var result = validation.Update(new object());
@@ -46,9 +46,9 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             // Assert 
             result.IsValid.ShouldBeFalse();
             result.Failures.Count.ShouldBe(1);
-            result.Failures.Single().Message.ShouldBe(message);
+            result.Failures.Single().Message.ShouldBe(defaultMessage);
             result.Failures.Single().GroupName.ShouldBe(groupName);
-            result.Failures.Single().Severity.ShouldBe(severtiy);
+            result.Failures.Single().Severity.ShouldBe(defaultSevertiy);
         }
     }
 }

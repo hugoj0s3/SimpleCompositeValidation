@@ -43,19 +43,20 @@ namespace SimpleCompositeValidation
 
         protected override IList<Failure> Validate()
         {
+
             var failures = new List<Failure>();
          
-            Update<object>(_validations.Values.SelectMany(x => x), failures);
+            Update(_validations.Values.SelectMany(x => x), failures);
 
             return failures;
         }
 
-        public IValidation<T> Update<TMember>(string groupName, TMember memberTarget)
+        public IValidation<T> Update<TMember>(string groupName, TMember value)
         {
             var failures = this.Failures.Where(x => x.GroupName != groupName).ToList();
 
             Update(_validations[typeof(TMember)]
-                .Where(x => x.Validation.GroupName == groupName), failures, item => memberTarget);
+                .Where(x => x.Validation.GroupName == groupName), failures, item => value, false);
 
             this.Failures = new ReadOnlyCollection<Failure>(failures);
 
@@ -65,7 +66,7 @@ namespace SimpleCompositeValidation
         public IValidation<T> Update<TMember>(string groupName)
         {
             var failures = this.Failures.Where(x => x.GroupName != groupName).ToList();
-            Update<TMember>(_validations[typeof(TMember)]
+            Update(_validations[typeof(TMember)]
                 .Where(x => x.Validation.GroupName == groupName), failures);
 
             this.Failures = new ReadOnlyCollection<Failure>(failures);
@@ -75,18 +76,23 @@ namespace SimpleCompositeValidation
 
         
 
-        private void Update<TMember>(IEnumerable<FuncValidation> validations, List<Failure> failures) 
+        private void Update(IEnumerable<FuncValidation> validations, List<Failure> failures) 
         {
             Update(validations, failures, item => item.MemberFunc.Invoke(this.Target));
         }
 
-        private static void Update(IEnumerable<FuncValidation> validations, List<Failure> failures,
-            Func<FuncValidation, object> func)
+        private void Update(IEnumerable<FuncValidation> validations, List<Failure> failures,
+            Func<FuncValidation, object> func, bool verifyTargetNull = true)
         {
+            if (Target == null && verifyTargetNull)
+            {
+                return;
+            }
+
             foreach (var item in validations)
             {
-                var target = func.Invoke(item);
-                item.UpdateAction.Invoke(target);
+                var targetMember = func.Invoke(item);
+                item.UpdateAction.Invoke(targetMember);
                 var itemFailures = item.Validation.Failures;
 
                 if (!(item.Validation.IsValid) && item.StopIfInvalid)
