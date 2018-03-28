@@ -26,7 +26,10 @@
             public CustomValidation(
                 string groupName, 
                 Person target = null) 
-                : base(groupName, message:"A person who are under 16 can not have driver license", target:target, severity:1)
+                : base(groupName, 
+                message:"A person who are under 16 can not have driver license", 
+                target:target, 
+                severity:1)
             {
             }
 
