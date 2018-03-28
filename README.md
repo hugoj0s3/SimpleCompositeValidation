@@ -20,3 +20,24 @@
             }
 
 
+## Creating a custom validate:
+        public class CustomValidation : Validation<Person>
+        {
+            public CustomValidation(
+                string groupName, 
+                Person target = null) 
+                : base(groupName, message:"A person who are under 16 can not have driver license", target:target, severity:1)
+            {
+            }
+
+            protected override IList<Failure> Validate()
+            {
+                var failures = new List<Failure>();
+                if (Target.HasDriverLicense && Target.Age < 16)
+                {
+                    failures.Add(new Failure(this));
+                }
+
+                return failures;
+            }
+        }
