@@ -21,6 +21,7 @@
 ```
 Note that NotNull, MinimumLength, MaximumLength, Email, RegEx, MustNot, Must are shortcuts to add specifics kind of validations.
 
+
 ## Creating a custom validation:
 ```csharp
         public class CustomValidation : Validation<Person>
