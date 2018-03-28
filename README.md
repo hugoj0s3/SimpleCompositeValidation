@@ -20,7 +20,7 @@
             }
 ```
 
-## Creating a custom validate:
+## Creating a custom validation:
 ```csharp
         public class CustomValidation : Validation<Person>
         {
