@@ -2,7 +2,7 @@
  Simple validation library based on composition. The idea is you create single and simple validations, and then you add those validations to validate an entire model. 
   
 
-## Compositing a validation:
+## Compositing:
 
      CompositeValidation<Person> Validation = new CompositeValidation<Person>()
                 .NotNull(nameof(Person.FirstName), x => x.FirstName) //Adding NullValidation
