@@ -1,5 +1,5 @@
 # SimpleValidationComposite 
- Simple validation library based on composition. You create single and simple validations, and then you add those validations to validate an entire model. 
+ Simple validation library based on composition. It aims to simplify the composition and reuse of validations logics. The idea is: You create single and simple validations, and then you add those validations to validate an entire model. 
   
 
 ## Compositing:
