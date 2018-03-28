@@ -3,7 +3,7 @@
   
 
 ## Compositing:
-
+```csharp
      CompositeValidation<Person> Validation = new CompositeValidation<Person>()
                 .NotNull(nameof(Person.FirstName), x => x.FirstName) //Adding NullValidation
                 .MinimumLength(nameof(Person.FirstName), x => x.FirstName, 3) //Adding StringMinimumLengthValidation
@@ -18,15 +18,17 @@
             {
                 IReadOnlyCollection<Failure> failures = Validation.Failures;
             }
-
+```
 
 ## Creating a custom validate:
+```csharp
         public class CustomValidation : Validation<Person>
         {
+            private const string message = "A person who are under 16 can not have driver license";
             public CustomValidation(
                 string groupName, 
                 Person target = null) 
-                : base(groupName, message:"A person who are under 16 can not have driver license", target:target, severity:1)
+                : base(groupName, message, target, 1)
             {
             }
 
@@ -41,3 +43,4 @@
                 return failures;
             }
         }
+```
