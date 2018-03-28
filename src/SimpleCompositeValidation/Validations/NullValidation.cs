@@ -5,7 +5,7 @@ using SimpleCompositeValidation.Base;
 
 namespace SimpleCompositeValidation.Validations
 {
-    public sealed class NullValidation<T> : IValidation<T> 
+    public sealed class NullValidation: IValidation<object> 
     {
 
         public bool AcceptNull { get; }
@@ -14,11 +14,11 @@ namespace SimpleCompositeValidation.Validations
         public string GroupName { get; }
         public IReadOnlyCollection<Failure> Failures { get; private set; }
         public bool IsValid => !Failures.Any();
-        public T Target { get; private set; }
+        public object Target { get; private set; }
 
         public NullValidation(
-            string groupName, 
-            T target, 
+            string groupName,
+            object target, 
             bool acceptNull = false, 
             string message = null, 
             int severity = 1
@@ -44,19 +44,19 @@ namespace SimpleCompositeValidation.Validations
             string message = null, 
             int severity = 1
             ) 
-            : this(groupName, default(T), acceptNull, message, severity)
+            : this(groupName, default(object), acceptNull, message, severity)
         {
             
         }
         
-        public IValidation<T> Update()
+        public IValidation<object> Update()
         {
             var failures = Validate();
             Failures = new ReadOnlyCollection<Failure>(failures);
             return this;
         }
 
-        public IValidation<T> Update(T target)
+        public IValidation<object> Update(object target)
         {
             Target = target;
             return Update();

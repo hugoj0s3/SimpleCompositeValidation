@@ -24,9 +24,9 @@ namespace SimpleCompositeValidation
 
         }
 
-        public Validation<T> Add<TMember>(
+        public CompositeValidation<T> Add<TMember>(
             IValidation<TMember> validation, 
-            Func<T, TMember> func,
+            Func<T, TMember> member,
             bool stopIfInvalid = false)
         {
             if (!_validations.TryGetValue(typeof(TMember), out var validations))
@@ -35,7 +35,7 @@ namespace SimpleCompositeValidation
                 _validations.Add(typeof(TMember), validations);
             }
 
-            var funcValidation = new FuncValidation(validation, x => func.Invoke(x), x => validation.Update((TMember)x), stopIfInvalid);
+            var funcValidation = new FuncValidation(validation, x => member.Invoke(x), x => validation.Update((TMember)x), stopIfInvalid);
             validations.Add(funcValidation);
 
             return this;
