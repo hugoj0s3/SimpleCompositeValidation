@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using SimpleCompositeValidation.Base;
-
-namespace SimpleCompositeValidation.Validations
+﻿namespace SimpleCompositeValidation.Validations
 {
     public class EmailValidation : RegExValidation
     {
@@ -22,7 +17,7 @@ namespace SimpleCompositeValidation.Validations
                 message = $"{groupName} Email is not valid";
             }
 
-            this.Message = message;
+            Message = message;
         }
     }
 }

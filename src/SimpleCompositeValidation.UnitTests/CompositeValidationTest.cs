@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using AutoFixture;
 using Moq;
 using SimpleCompositeValidation.Base;
@@ -92,7 +91,7 @@ namespace SimpleCompositeValidation.UnitTests
             var lastNameMock = allValidation.LastNameMock;
 
             // Act
-            validation.Update<string>("LastName", lastName);
+            validation.Update("LastName", lastName);
 
             // Assert
             lastNameMock.Verify(x => x.Update(lastName), Times.Once);
@@ -178,10 +177,18 @@ namespace SimpleCompositeValidation.UnitTests
 
         private class Person
         {
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public bool HasDriverLicense { get; set; }
-            public int Age { get; set; }
+            public Person(string firstName, string lastName, bool hasDriverLicense, int age)
+            {
+                FirstName = firstName;
+                LastName = lastName;
+                HasDriverLicense = hasDriverLicense;
+                Age = age;
+            }
+
+            public string FirstName { get; }
+            public string LastName { get; }
+            public bool HasDriverLicense { get; }
+            public int Age { get; }
         }
 
         private class ValidationsMocked
@@ -195,10 +202,10 @@ namespace SimpleCompositeValidation.UnitTests
                 AgeValidationMock = ageValidationMock;
             }
 
-            public Mock<IValidation<string>> FirstNameMock { get; private set; }
-            public Mock<IValidation<string>> LastNameMock { get; private set; }
-            public Mock<IValidation<bool>> HasDriverLicenseMock { get; private set; }
-            public Mock<IValidation<int>> AgeValidationMock { get; private set; }
+            public Mock<IValidation<string>> FirstNameMock { get; }
+            public Mock<IValidation<string>> LastNameMock { get; }
+            public Mock<IValidation<bool>> HasDriverLicenseMock { get; }
+            public Mock<IValidation<int>> AgeValidationMock { get; }
         }
     }
 }

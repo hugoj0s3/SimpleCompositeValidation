@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using SimpleCompositeValidation.Base;
 
 namespace SimpleCompositeValidation
@@ -53,23 +52,23 @@ namespace SimpleCompositeValidation
 
         public IValidation<T> Update<TMember>(string groupName, TMember value)
         {
-            var failures = this.Failures.Where(x => x.GroupName != groupName).ToList();
+            var failures = Failures.Where(x => x.GroupName != groupName).ToList();
 
             Update(_validations[typeof(TMember)]
                 .Where(x => x.Validation.GroupName == groupName), failures, item => value, false);
 
-            this.Failures = new ReadOnlyCollection<Failure>(failures);
+            Failures = new ReadOnlyCollection<Failure>(failures);
 
             return this;
         }
 
         public IValidation<T> Update<TMember>(string groupName)
         {
-            var failures = this.Failures.Where(x => x.GroupName != groupName).ToList();
+            var failures = Failures.Where(x => x.GroupName != groupName).ToList();
             Update(_validations[typeof(TMember)]
                 .Where(x => x.Validation.GroupName == groupName), failures);
 
-            this.Failures = new ReadOnlyCollection<Failure>(failures);
+            Failures = new ReadOnlyCollection<Failure>(failures);
 
             return this;
         }
@@ -78,7 +77,7 @@ namespace SimpleCompositeValidation
 
         private void Update(IEnumerable<FuncValidation> validations, List<Failure> failures) 
         {
-            Update(validations, failures, item => item.MemberFunc.Invoke(this.Target));
+            Update(validations, failures, item => item.MemberFunc.Invoke(Target));
         }
 
         private void Update(IEnumerable<FuncValidation> validations, List<Failure> failures,
