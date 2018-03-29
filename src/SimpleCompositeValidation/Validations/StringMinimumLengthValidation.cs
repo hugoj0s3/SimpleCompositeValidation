@@ -3,8 +3,14 @@ using SimpleCompositeValidation.Base;
 
 namespace SimpleCompositeValidation.Validations
 {
+    /// <summary>
+    ///  Validates a string requiring a minimum length.
+    /// </summary>
     public class StringMinimumLengthValidation : Validation<string>
     {
+        /// <summary>
+        ///  Minimum length required
+        /// </summary>
         public int MinimumLength { get; }
         public StringMinimumLengthValidation(
             string groupName, 

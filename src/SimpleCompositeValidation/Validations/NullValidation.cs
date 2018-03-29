@@ -5,20 +5,45 @@ using SimpleCompositeValidation.Base;
 
 namespace SimpleCompositeValidation.Validations
 {
+	/// <summary>
+	/// Validates if object can be null or not.
+	/// </summary>
     public sealed class NullValidation: IValidation<object> 
     {
-
+		/// <summary>
+		/// Define if validation accept or not accept null.
+		/// </summary>
         public bool AcceptNull { get; }
-        public string Message { get; }
-        public int Severity { get; }
-        public string GroupName { get; }
-        public IReadOnlyCollection<Failure> Failures { get; private set; }
-        public bool IsValid => !Failures.Any();
-        public object Target { get; private set; }
 
-        public NullValidation(
+	    /// <inheritdoc />
+	    public string Message { get; }
+
+	    /// <inheritdoc />
+	    public int Severity { get; }
+
+	    /// <inheritdoc />
+	    public string GroupName { get; }
+
+	    /// <inheritdoc />
+	    public IReadOnlyCollection<Failure> Failures { get; private set; }
+
+	    /// <inheritdoc />
+	    public bool IsValid => !Failures.Any();
+
+	    /// <inheritdoc />
+	    public object Target { get; private set; }
+
+		/// <summary>
+		/// Creates a null validation.
+		/// </summary>
+		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+		/// <param name="message">Default message to be applied in the failures</param>
+		/// <param name="target">Target to be validated. by default it is null</param>
+		/// <param name="acceptNull">Define if validation accept or not accept null.</param>
+		/// <param name="severity">Severity in case of failure</param>
+		public NullValidation(
             string groupName,
-            object target, 
+            object target = null, 
             bool acceptNull = false, 
             string message = null, 
             int severity = 1
@@ -36,17 +61,6 @@ namespace SimpleCompositeValidation.Validations
             Message = message;
             Severity = severity;
             Failures = new List<Failure>().AsReadOnly();
-        }
-
-        public NullValidation(
-            string groupName, 
-            bool acceptNull = false, 
-            string message = null, 
-            int severity = 1
-            ) 
-            : this(groupName, default(object), acceptNull, message, severity)
-        {
-            
         }
         
         public IValidation<object> Update()

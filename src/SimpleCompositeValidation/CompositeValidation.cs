@@ -2,27 +2,65 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using SimpleCompositeValidation.Base;
 
 namespace SimpleCompositeValidation
 {
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
     public class CompositeValidation<T> : Validation<T> 
     {
         private readonly IDictionary<Type, IList<FuncValidation>> _validations 
             = new Dictionary<Type, IList<FuncValidation>>();
 
-        public CompositeValidation(T target)
-            : base(typeof(T).Name, null, target)
+		/// <summary>
+		/// Creates composite validation with a summary message that will be inserted in the top of failures list.
+		/// </summary>
+		/// <param name="target">Target to be validated</param>
+		/// <param name="summaryMessage">Message that will be inserted as the first item in case of failure</param>
+		public CompositeValidation(T target, string summaryMessage)
+            : base(typeof(T).Name, summaryMessage, target)
         {
-
         }
 
-        public CompositeValidation()
+		/// <summary>
+		/// Creates composite validation without a summary message, choosing this constructor no message will be inserted in the top of failures list.
+		/// </summary>
+		/// <param name="target">Target to be validated</param>
+		public CompositeValidation(T target)
+            : this(target, null)
+        {
+        }
+		/// <summary>
+		///  Creates composite validation with a summary message that will be inserted in the top of failures list. 
+		///  The target be initialized with the default value(default(T)).
+		/// </summary>
+		/// <param name="summaryMessage">Message that will be inserted as the first item in case of failure</param>
+		public CompositeValidation(string summaryMessage)
+            : this(default(T), summaryMessage)
+        {
+        }
+
+		/// <summary>
+		///  Creates composite validation without a summary message, choosing this constructor no message will be inserted in the top of failures list.
+		///  The target be initialized with the default value(default(T)).
+		/// </summary>
+		public CompositeValidation()
             : this(default(T))
         {
-
         }
 
+        /// <summary>
+        /// Add a validation in the composition
+        /// </summary>
+        /// <typeparam name="TMember">type of the member</typeparam>
+        /// <param name="validation">validation to validate this member</param>
+        /// <param name="member">Path to obtain the member</param>
+        /// <param name="stopIfInvalid">pass true to stop if it failed on this validation. default is false</param>
+        /// <returns></returns>
         public CompositeValidation<T> Add<TMember>(
             IValidation<TMember> validation, 
             Func<T, TMember> member,
@@ -40,40 +78,76 @@ namespace SimpleCompositeValidation
             return this;
         }
 
-        protected override IList<Failure> Validate()
+		/// <summary>
+		/// Validates the target and return the list of failures
+		/// It inserts a failure in the top of the list if there is a failure in any of validations added and the summary message was set in the constructor
+		/// </summary>
+		/// <returns>a list of failures, it might be empty if there are no fails</returns>
+		protected override IList<Failure> Validate()
         {
 
             var failures = new List<Failure>();
          
             Update(_validations.Values.SelectMany(x => x), failures);
 
+            if (failures.Any() && Message != null)
+            {
+                failures.Insert(0, new Failure(this));
+            }
+
             return failures;
         }
 
-        public IValidation<T> Update<TMember>(string groupName, TMember value)
+		/// <summary>
+		/// Update partially according with group name passed.
+		/// </summary>
+		/// <typeparam name="TMember">Type of the member</typeparam>
+		/// <param name="groupName">Group name</param>
+		/// <param name="value">value to be validated</param>
+		/// <returns>Itself</returns>
+		public IValidation<T> Update<TMember>(string groupName, TMember value)
         {
+			
             var failures = Failures.Where(x => x.GroupName != groupName).ToList();
+
+	        bool noFailuresBefore = !failures.Any();
 
             Update(_validations[typeof(TMember)]
                 .Where(x => x.Validation.GroupName == groupName), failures, item => value, false);
 
-            Failures = new ReadOnlyCollection<Failure>(failures);
+	        if (failures.Any() && Message != null && noFailuresBefore)
+	        {
+		        failures.Insert(0, new Failure(this));
+	        }
+
+			Failures = new ReadOnlyCollection<Failure>(failures);
 
             return this;
         }
 
-        public IValidation<T> Update<TMember>(string groupName)
+		/// <summary>
+		/// Update partially according with group name passed.
+		/// </summary>
+		/// <typeparam name="TMember">Type of the member</typeparam>
+		/// <param name="groupName">Group name</param>
+		/// <returns>Itself</returns>
+		public IValidation<T> Update<TMember>(string groupName)
         {
             var failures = Failures.Where(x => x.GroupName != groupName).ToList();
-            Update(_validations[typeof(TMember)]
+
+	        var noFailuresBefore = !failures.Any();
+
+			Update(_validations[typeof(TMember)]
                 .Where(x => x.Validation.GroupName == groupName), failures);
 
             Failures = new ReadOnlyCollection<Failure>(failures);
 
-            return this;
+	        if (failures.Any() && Message != null && noFailuresBefore)
+	        {
+		        failures.Insert(0, new Failure(this));
+	        }
+			return this;
         }
-
-        
 
         private void Update(IEnumerable<FuncValidation> validations, List<Failure> failures) 
         {
@@ -103,7 +177,6 @@ namespace SimpleCompositeValidation
             }
         }
 
-
         private class FuncValidation
         {
             public FuncValidation(
@@ -119,9 +192,7 @@ namespace SimpleCompositeValidation
             }
             public IValidation Validation { get; }
             public Func<T, object> MemberFunc { get; }
-
             public Action<object> UpdateAction { get; }
-
             public bool StopIfInvalid { get; }
         }
     }

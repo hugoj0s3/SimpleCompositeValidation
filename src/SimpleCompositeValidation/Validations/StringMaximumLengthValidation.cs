@@ -3,9 +3,16 @@ using SimpleCompositeValidation.Base;
 
 namespace SimpleCompositeValidation.Validations
 {
+    /// <summary>
+    ///  Validates a string requiring a maximum length.
+    /// </summary>
     public class StringMaximumLengthValidation : Validation<string>
     {
+        /// <summary>
+        /// Maxixum length required.
+        /// </summary>
         public int MaximumLength { get; }
+
         public StringMaximumLengthValidation(
             string groupName, 
             string target, 
@@ -31,7 +38,8 @@ namespace SimpleCompositeValidation.Validations
         {
         }
 
-        protected override IList<Failure> Validate()
+	    /// <inheritdoc />
+	    protected override IList<Failure> Validate()
         {
             var failures = new List<Failure>();
             if (Target.Length > MaximumLength)

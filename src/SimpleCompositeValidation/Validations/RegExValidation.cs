@@ -4,11 +4,25 @@ using SimpleCompositeValidation.Base;
 
 namespace SimpleCompositeValidation.Validations
 {
+	/// <summary>
+	/// Validation according with regular expression
+	/// </summary>
     public class RegExValidation : Validation<string>
     {
+		/// <summary>
+		/// Regular expression
+		/// </summary>
         public string Pattern { get; }
 
-        public RegExValidation(
+		/// <summary>
+		/// Creates Regular expression validation
+		/// </summary>
+		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+		/// <param name="pattern">Regular expression</param>
+		/// <param name="target">Target to be validated</param>
+		/// <param name="message">Default message to be applied in the failures</param>
+		/// <param name="severity">Severity in case of failure</param>
+		public RegExValidation(
             string groupName, 
             string pattern,
             string target = null,
@@ -24,7 +38,8 @@ namespace SimpleCompositeValidation.Validations
             Message = message;
         }
 
-        protected override IList<Failure> Validate()
+	    /// <inheritdoc />
+	    protected override IList<Failure> Validate()
         {
             var failures = new List<Failure>();
 

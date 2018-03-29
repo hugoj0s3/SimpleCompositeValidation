@@ -2,18 +2,59 @@
 
 namespace SimpleCompositeValidation.Base
 {
+	/// <summary>
+	/// Base interface for validation
+	/// </summary>
     public interface IValidation
     {
-        int Severity { get; }
-        string GroupName { get; }
-        string Message { get; }
+		/// <summary>
+		/// Severity in case of failure
+		/// </summary>
+		int Severity { get; }
+
+		/// <summary>
+		/// Group name to group your validations, it can be a property name for example
+		/// </summary>
+		string GroupName { get; }
+
+		/// <summary>
+		/// Default message to be applied in the failures
+		/// </summary>
+		string Message { get; }
+
+		/// <summary>
+		/// List of failures
+		/// </summary>
         IReadOnlyCollection<Failure> Failures { get; }
-        bool IsValid { get; }
+
+	    /// <summary>
+	    /// True if the target is valid
+	    /// False if there are any failures.
+	    /// </summary>
+		bool IsValid { get; }
     }
-    public interface IValidation<T> : IValidation
+
+	/// <summary>
+	/// Base interface for typed validation
+	/// </summary>
+	/// <typeparam name="T">Type of the Target that will be validated</typeparam>
+	public interface IValidation<T> : IValidation
     {
+		/// <summary>
+		/// Target to be validated
+		/// </summary>
         T Target { get; }
-        IValidation<T> Update();
-        IValidation<T> Update(T target);
+
+		/// <summary>
+		/// Update failures list and IsValid property
+		/// </summary>
+		/// <returns>Itself</returns>
+		IValidation<T> Update();
+
+	    /// <summary>
+	    /// Update failures list, IsValid property, Target property
+	    /// </summary>
+	    /// <returns>Itself</returns>
+		IValidation<T> Update(T target);
     }
 }
