@@ -78,7 +78,7 @@ namespace SimpleCompositeValidation.Extensions
             string message = null,
             int severity = 1)
         {
-            thisValidation.Add(new RegularExpressionValidation(groupName, pattern, null, message, severity), member);
+            thisValidation.Add(new RegExValidation(groupName, pattern, null, message, severity), member);
             return thisValidation;
         }
 

@@ -4,11 +4,11 @@ using SimpleCompositeValidation.Base;
 
 namespace SimpleCompositeValidation.Validations
 {
-    public class RegularExpressionValidation : Validation<string>
+    public class RegExValidation : Validation<string>
     {
         public string Pattern { get; }
 
-        public RegularExpressionValidation(
+        public RegExValidation(
             string groupName, 
             string pattern,
             string target = null,

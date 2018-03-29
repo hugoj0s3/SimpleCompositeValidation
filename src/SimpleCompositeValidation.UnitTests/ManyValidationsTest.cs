@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Shouldly;
+using SimpleCompositeValidation.Base;
 using SimpleCompositeValidation.Extensions;
 using SimpleCompositeValidation.Validations;
 using Xunit;
@@ -11,7 +12,9 @@ namespace SimpleCompositeValidation.UnitTests
 {
     public class ManyValidationsTest
     {
-        private readonly CompositeValidation<Person> _personValidation = new CompositeValidation<Person>()
+        private const string message = "A person who are under 16 can not have driver license";
+
+        private readonly CompositeValidation<Person> PersonValidation = new CompositeValidation<Person>()
             .NotNull(nameof(Person.FirstName), x => x.FirstName)
             .MinimumLength(nameof(Person.FirstName), x => x.FirstName, 3)
             .MaximumLength(nameof(Person.FirstName), x => x.FirstName, 10)
@@ -23,6 +26,7 @@ namespace SimpleCompositeValidation.UnitTests
             .RegEx(nameof(Person.Phone), x => x.Phone, @"^[0-9\-\+]{9,15}$")
             .MustNot(nameof(Person.BirthDate), x => x.BirthDate, x => x.Year < 1850)
             .Must(nameof(Person.BirthDate), x => x.BirthDate, x => x < DateTime.Now);
+            
 
         [Fact]
         public void Update1_AddingAllValidation_ItRaisesFailuresCorrectly()
@@ -38,26 +42,26 @@ namespace SimpleCompositeValidation.UnitTests
             };
 
             // Act
-            _personValidation.Update(person);
+            PersonValidation.Update(person);
 
             // Assert 
-            _personValidation.IsValid.ShouldBeFalse();
-            _personValidation.Failures.Count.ShouldBe(5);
+            PersonValidation.IsValid.ShouldBeFalse();
+            PersonValidation.Failures.Count.ShouldBe(5);
 
-            _personValidation.Failures.Single(x => x.GroupName == nameof(Person.FirstName))
+            PersonValidation.Failures.Single(x => x.GroupName == nameof(Person.FirstName))
                 .Validation.ShouldBeOfType<StringMinimumLengthValidation>();
 
-            _personValidation.Failures.Single(x => x.GroupName == nameof(Person.LastName))
+            PersonValidation.Failures.Single(x => x.GroupName == nameof(Person.LastName))
                 .Validation.ShouldBeOfType<StringMinimumLengthValidation>();
 
-            _personValidation.Failures.Single(x => x.GroupName == nameof(Person.Email))
+            PersonValidation.Failures.Single(x => x.GroupName == nameof(Person.Email))
                 .Validation.ShouldBeOfType<EmailValidation>();
 
-            _personValidation.Failures.Single(x => x.GroupName == nameof(Person.Phone))
-                .Validation.ShouldBeOfType<RegularExpressionValidation>();
+            PersonValidation.Failures.Single(x => x.GroupName == nameof(Person.Phone))
+                .Validation.ShouldBeOfType<RegExValidation>();
 
-            _personValidation.Failures.ElementAt(4).GroupName.ShouldBe(nameof(Person.BirthDate));
-            _personValidation.Failures.ElementAt(4).Validation.ShouldBeOfType<MustNotValidation<DateTime>>();
+            PersonValidation.Failures.Single(x => x.GroupName == nameof(Person.BirthDate))
+                .Validation.ShouldBeOfType<MustNotValidation<DateTime>>();
         }
 
         [Fact]
@@ -74,22 +78,22 @@ namespace SimpleCompositeValidation.UnitTests
             };
 
             // Act
-            _personValidation.Update(person);
+            PersonValidation.Update(person);
 
             // Assert 
-            _personValidation.IsValid.ShouldBeFalse();
-            _personValidation.Failures.Count.ShouldBe(4);
+            PersonValidation.IsValid.ShouldBeFalse();
+            PersonValidation.Failures.Count.ShouldBe(4);
 
-            _personValidation.Failures.Single(x => x.GroupName == nameof(Person.FirstName))
+            PersonValidation.Failures.Single(x => x.GroupName == nameof(Person.FirstName))
                 .Validation.ShouldBeOfType<StringMaximumLengthValidation>();
 
-            _personValidation.Failures.Single(x => x.GroupName == nameof(Person.LastName))
+            PersonValidation.Failures.Single(x => x.GroupName == nameof(Person.LastName))
                 .Validation.ShouldBeOfType<StringMaximumLengthValidation>();
 
-            _personValidation.Failures.Single(x => x.GroupName == nameof(Person.Email))
+            PersonValidation.Failures.Single(x => x.GroupName == nameof(Person.Email))
                 .Validation.ShouldBeOfType<NullValidation>();
 
-            _personValidation.Failures.Single(x => x.GroupName == nameof(Person.BirthDate))
+            PersonValidation.Failures.Single(x => x.GroupName == nameof(Person.BirthDate))
                 .Validation.ShouldBeOfType<MustValidation<DateTime>>();
         }
 
@@ -107,16 +111,16 @@ namespace SimpleCompositeValidation.UnitTests
             };
 
             // Act
-            _personValidation.Update(person);
+            PersonValidation.Update(person);
 
             // Assert 
-            _personValidation.IsValid.ShouldBeFalse();
-            _personValidation.Failures.Count.ShouldBe(2);
+            PersonValidation.IsValid.ShouldBeFalse();
+            PersonValidation.Failures.Count.ShouldBe(2);
 
-            _personValidation.Failures.Single(x => x.GroupName == nameof(Person.FirstName))
+            PersonValidation.Failures.Single(x => x.GroupName == nameof(Person.FirstName))
                 .Validation.ShouldBeOfType<NullValidation>();
 
-            _personValidation.Failures.Single(x => x.GroupName == nameof(Person.LastName))
+            PersonValidation.Failures.Single(x => x.GroupName == nameof(Person.LastName))
                 .Validation.ShouldBeOfType<NullValidation>();
 
         }
@@ -129,5 +133,7 @@ namespace SimpleCompositeValidation.UnitTests
             public string Email { get; set; }
             public string Phone { get; set; }
         }
+
+       
     }
 }

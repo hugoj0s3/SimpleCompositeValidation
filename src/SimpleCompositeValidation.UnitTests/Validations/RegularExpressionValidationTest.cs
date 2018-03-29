@@ -21,7 +21,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             var defaultMessage = "Name is not valid";
 
             var validation = 
-                new RegularExpressionValidation(groupName, pattern, target);
+                new RegExValidation(groupName, pattern, target);
 
             // Act
             var result = validation.Update();
@@ -44,7 +44,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             var target = "Hugo";
 
             var validation =
-                new RegularExpressionValidation(groupName, pattern, target);
+                new RegExValidation(groupName, pattern, target);
 
             // Act
             var result = validation.Update();
