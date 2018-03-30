@@ -12,20 +12,35 @@ namespace SimpleCompositeValidation.Validations
     {
         public Func<T, bool> Rule { get; }
 
-	    /// <summary>
-	    /// Creates a validation with given parameters.
-	    /// </summary>
-	    /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-	    /// <param name="message">Default message to be applied in the failures</param>
-	    /// <param name="target">Target to be validated</param>
-	    /// <param name="rule">Condition</param>
-	    /// <param name="severity">Severity in case of failure</param>
-		public MustValidation(
-            string groupName, 
-            T target, 
+        /// <summary>
+        /// Creates a validation with given parameters.
+        /// </summary>
+        /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+        /// <param name="target">Target to be validated</param>
+        /// <param name="rule">Condition</param>
+        public MustValidation(
+            string groupName,
+            Func<T, bool> rule,
+            T target )
+            : this(groupName, rule, null, 1, target)
+        {
+           
+        }
+
+        /// <summary>
+        /// Creates a validation with given parameters.
+        /// </summary>
+        /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+        /// <param name="message">Default message to be applied in the failures</param>
+        /// <param name="target">Target to be validated</param>
+        /// <param name="rule">Condition</param>
+        /// <param name="severity">Severity in case of failure</param>
+        public MustValidation(
+            string groupName,
             Func<T, bool> rule, 
             string message = null, 
-            int severity = 1) 
+            int severity = 1,
+	        T target = default(T)) 
             : base(groupName, null, target, severity)
         {
             if (message == null)
@@ -34,22 +49,6 @@ namespace SimpleCompositeValidation.Validations
             }
             Rule = rule;
             Message = message;
-        }
-		/// <summary>
-		/// Creates a validation with given parameters. The target be initialized with the default value(default(T)).
-		/// </summary>
-		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-		/// <param name="message">Default message to be applied in the failures</param>
-		/// <param name="rule">Condition</param>
-		/// <param name="severity">Severity in case of failure</param>
-		public MustValidation(
-            string groupName, 
-            Func<T, bool> rule, 
-            string message = null, 
-            int severity = 1) 
-            : this(groupName, default(T), rule, message, severity)
-        {
-           
         }
 
         protected override IList<Failure> Validate()

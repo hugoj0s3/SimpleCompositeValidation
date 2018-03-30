@@ -43,10 +43,10 @@ namespace SimpleCompositeValidation.Validations
 		/// <param name="severity">Severity in case of failure</param>
 		public NullValidation(
             string groupName,
-            object target = null, 
             bool acceptNull = false, 
             string message = null, 
-            int severity = 1
+            int severity = 1,
+            object target = null
             ) 
         {
             if (message == null)

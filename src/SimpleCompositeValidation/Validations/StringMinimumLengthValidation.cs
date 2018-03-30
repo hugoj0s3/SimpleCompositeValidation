@@ -12,13 +12,29 @@ namespace SimpleCompositeValidation.Validations
         ///  Minimum length required
         /// </summary>
         public int MinimumLength { get; }
+
+        public StringMinimumLengthValidation(
+            string groupName,
+            int minimumLength)
+            : this(groupName, minimumLength, null)
+        {
+        }
+
+        public StringMinimumLengthValidation(
+            string groupName,
+            int minimumLength,
+            string target = null)
+            : this(groupName, minimumLength, null, 1,target)
+        {
+        }
+
         public StringMinimumLengthValidation(
             string groupName, 
-            string target, 
             int minimumLength, 
             string message = null, 
-            int severity = 1) 
-            : base(groupName, null, target, severity)
+            int severity = 1,
+            string target = null) 
+            : base(groupName, message, target, severity)
         {
             if (message == null)
             {
@@ -26,15 +42,6 @@ namespace SimpleCompositeValidation.Validations
             }
             MinimumLength = minimumLength;
             Message = message;
-        }
-
-        public StringMinimumLengthValidation(
-            string groupName, 
-            int minimumLength, 
-            string message = null, 
-            int severity = 1) 
-            : this(groupName, null, minimumLength, message, severity)
-        {
         }
 
         protected override IList<Failure> Validate()

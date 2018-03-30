@@ -21,7 +21,7 @@ namespace SimpleCompositeValidation.Extensions
             string message = null, 
             int severity = 1)
         {
-            thisValidation.Add(new NullValidation(groupName, null, false, message, severity), member);
+            thisValidation.Add(new NullValidation(groupName, false, message, severity), member);
             return thisValidation;
         }
         /// <summary>
@@ -40,7 +40,7 @@ namespace SimpleCompositeValidation.Extensions
             string message = null,
             int severity = 1)
         {
-            thisValidation.Add(new NullValidation(groupName, null, true, message, severity), member);
+            thisValidation.Add(new NullValidation(groupName, true, message, severity), member);
             return thisValidation;
         }
 
@@ -152,7 +152,7 @@ namespace SimpleCompositeValidation.Extensions
             string message = null,
             int severity = 1)
         {
-            thisValidation.Add(new RegExValidation(groupName, pattern, null, message, severity), member);
+            thisValidation.Add(new RegExValidation(groupName, pattern, message, severity), member);
             return thisValidation;
         }
 
@@ -172,7 +172,7 @@ namespace SimpleCompositeValidation.Extensions
             string message = null,
             int severity = 1)
         {
-            thisValidation.Add(new EmailValidation(groupName, null, message, severity), member);
+            thisValidation.Add(new EmailValidation(groupName, message, severity), member);
             return thisValidation;
         }
     }

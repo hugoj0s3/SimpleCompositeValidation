@@ -14,12 +14,27 @@ namespace SimpleCompositeValidation.Validations
         public int MaximumLength { get; }
 
         public StringMaximumLengthValidation(
+            string groupName,
+            int maximumLength)
+            : this(groupName, maximumLength, null)
+        {
+        }
+
+        public StringMaximumLengthValidation(
+            string groupName,
+            int maximumLength,
+            string target = null)
+            : this(groupName, maximumLength, null, 1, target)
+        { 
+        }
+
+        public StringMaximumLengthValidation(
             string groupName, 
-            string target, 
             int maximumLength, 
             string message = null, 
-            int severity = 1) 
-            : base(groupName, null, target, severity)
+            int severity = 1,
+            string target = null) 
+            : base(groupName, message, target, severity)
         {
             if (message == null)
             {
@@ -29,14 +44,6 @@ namespace SimpleCompositeValidation.Validations
             Message = message;
         }
 
-        public StringMaximumLengthValidation(
-            string groupName, 
-            int maximumLength, 
-            string message = null, 
-            int severity = 1) 
-            : this(groupName, null, maximumLength, message, severity)
-        {
-        }
 
 	    /// <inheritdoc />
 	    protected override IList<Failure> Validate()

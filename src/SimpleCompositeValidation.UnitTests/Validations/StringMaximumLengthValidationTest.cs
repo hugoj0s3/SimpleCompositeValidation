@@ -15,7 +15,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             var invalidString = "abcde";
             var defaultMessage = $"{groupName} the characters length limit is 4";
             var defaultSeverity = 1;
-            var validation = new StringMaximumLengthValidation(groupName, invalidString, 4);
+            var validation = new StringMaximumLengthValidation(groupName, 4, invalidString);
             
             // Act
             var result = validation.Update();

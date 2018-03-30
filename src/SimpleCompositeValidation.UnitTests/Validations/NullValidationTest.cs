@@ -14,7 +14,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             const string groupName = "NullObject";
             const string message = "TestError";
             const int severtiy = 999;
-            var validation = new NullValidation(groupName, new object(), false, message, severtiy);
+            var validation = new NullValidation(groupName, false, message, severtiy, new object());
 
             // Act
             var result = validation.Update(null);
@@ -35,7 +35,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             const string groupName = "Object";
             var defaultMessage = $"{groupName} must be null";
             const int defaultSevertiy = 1;
-            var validation = new NullValidation(groupName, null, true);
+            var validation = new NullValidation(groupName, true, null);
 
             // Act
             var result = validation.Update(new object());
