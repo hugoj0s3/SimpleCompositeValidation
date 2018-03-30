@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Linq.Expressions;
 using SimpleCompositeValidation.Base;
 
 namespace SimpleCompositeValidation
 {
     /// <summary>
-    /// Composite Validation class. Updates the validations added keeping a list of failures from those validations.
+    /// Composite Validation class. Updates the validations added, keeping a list of failures from those validations.
     /// </summary>
     /// <typeparam name="T">Type of the Target that will be validated</typeparam>
     public class CompositeValidation<T> : Validation<T> 
