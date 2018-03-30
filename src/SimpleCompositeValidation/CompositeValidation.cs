@@ -7,10 +7,10 @@ using SimpleCompositeValidation.Base;
 
 namespace SimpleCompositeValidation
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
+    /// <summary>
+    /// Composite Validation class. Updates the validations added keeping a list of failures from those validations.
+    /// </summary>
+    /// <typeparam name="T">Type of the Target that will be validated</typeparam>
     public class CompositeValidation<T> : Validation<T> 
     {
         private readonly IDictionary<Type, IList<FuncValidation>> _validations 
@@ -79,26 +79,6 @@ namespace SimpleCompositeValidation
         }
 
 		/// <summary>
-		/// Validates the target and return the list of failures
-		/// It inserts a failure in the top of the list if there is a failure in any of validations added and the summary message was set in the constructor
-		/// </summary>
-		/// <returns>a list of failures, it might be empty if there are no fails</returns>
-		protected override IList<Failure> Validate()
-        {
-
-            var failures = new List<Failure>();
-         
-            Update(_validations.Values.SelectMany(x => x), failures);
-
-            if (failures.Any() && Message != null)
-            {
-                failures.Insert(0, new Failure(this));
-            }
-
-            return failures;
-        }
-
-		/// <summary>
 		/// Update partially according with group name passed.
 		/// </summary>
 		/// <typeparam name="TMember">Type of the member</typeparam>
@@ -115,7 +95,7 @@ namespace SimpleCompositeValidation
             Update(_validations[typeof(TMember)]
                 .Where(x => x.Validation.GroupName == groupName), failures, item => value, false);
 
-	        if (failures.Any() && Message != null && noFailuresBefore)
+	        if (failures.Any() && HasSummaryMessage && noFailuresBefore)
 	        {
 		        failures.Insert(0, new Failure(this));
 	        }
@@ -142,11 +122,44 @@ namespace SimpleCompositeValidation
 
             Failures = new ReadOnlyCollection<Failure>(failures);
 
-	        if (failures.Any() && Message != null && noFailuresBefore)
+	        if (failures.Any() && HasSummaryMessage && noFailuresBefore)
 	        {
 		        failures.Insert(0, new Failure(this));
 	        }
 			return this;
+        }
+
+        /// <summary>
+        /// Validations added
+        /// </summary>
+        public IReadOnlyCollection<IValidation> Validations =>
+            _validations.Values
+                .SelectMany(x => x)
+                .Select(x => x.Validation)
+                .ToList().AsReadOnly();
+
+        public bool HasSummaryMessage => !string.IsNullOrEmpty(Message);
+
+        public string SummaryMessage => Message;
+
+        /// <summary>
+        /// Validates the target and return the list of failures
+        /// It inserts a failure in the top of the list if there is a failure in any of validations added and the summary message was set in the constructor
+        /// </summary>
+        /// <returns>a list of failures, it might be empty if there are no fails</returns>
+        protected override IList<Failure> Validate()
+        {
+
+            var failures = new List<Failure>();
+
+            Update(_validations.Values.SelectMany(x => x), failures);
+
+            if (failures.Any() && Message != null)
+            {
+                failures.Insert(0, new Failure(this));
+            }
+
+            return failures;
         }
 
         private void Update(IEnumerable<FuncValidation> validations, List<Failure> failures) 
