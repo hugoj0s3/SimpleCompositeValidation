@@ -12,16 +12,29 @@ namespace SimpleCompositeValidation.Validations
     {
         public Func<T, bool> Rule { get; }
 
-        /// <summary>
-        /// Creates a validation with given parameters.
-        /// </summary>
-        /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-        /// <param name="target">Target to be validated</param>
-        /// <param name="rule">Condition</param>
-        public MustValidation(
+	    /// <summary>
+	    /// Creates a validation with given parameters.
+	    /// </summary>
+	    /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+	    /// <param name="rule">Condition</param>
+	    public MustValidation(
+		    string groupName,
+		    Func<T, bool> rule)
+		    : this(groupName, rule, default(T))
+	    {
+
+	    }
+
+		/// <summary>
+		/// Creates a validation with given parameters.
+		/// </summary>
+		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+		/// <param name="target">Target to be validated</param>
+		/// <param name="rule">Condition</param>
+		public MustValidation(
             string groupName,
             Func<T, bool> rule,
-            T target )
+            T target)
             : this(groupName, rule, null, 1, target)
         {
            

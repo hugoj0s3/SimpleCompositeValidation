@@ -23,7 +23,7 @@ namespace SimpleCompositeValidation.Validations
         public StringMaximumLengthValidation(
             string groupName,
             int maximumLength,
-            string target = null)
+            string target)
             : this(groupName, maximumLength, null, 1, target)
         { 
         }

@@ -9,13 +9,26 @@ namespace SimpleCompositeValidation.Validations
 	public class MustNotValidation<T> : MustValidation<T> 
     {
 
-        /// <summary>
-        /// Creates a validation with given parameters.
-        /// </summary>
-        /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-        /// <param name="rule">Condition</param>
-        /// <param name="target">Target to be validated</param>
-        public MustNotValidation(
+	    /// <summary>
+	    /// Creates a validation with given parameters.
+	    /// </summary>
+	    /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+	    /// <param name="rule">Condition</param>
+	    public MustNotValidation(
+		    string groupName,
+		    Func<T, bool> rule)
+		    : base(groupName, x => !rule.Invoke(x), default(T))
+	    {
+
+	    }
+
+		/// <summary>
+		/// Creates a validation with given parameters.
+		/// </summary>
+		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+		/// <param name="rule">Condition</param>
+		/// <param name="target">Target to be validated</param>
+		public MustNotValidation(
             string groupName,
             Func<T, bool> rule,
             T target)

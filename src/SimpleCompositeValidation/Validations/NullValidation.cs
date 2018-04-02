@@ -33,6 +33,24 @@ namespace SimpleCompositeValidation.Validations
 	    /// <inheritdoc />
 	    public object Target { get; private set; }
 
+
+		/// <summary>
+		/// Creates a null validation.
+		/// </summary>
+		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+		/// <param name="acceptNull">Define if validation accept or not accept null.</param>
+		/// <param name="target">Target to be validated. by default it is null</param>
+		public NullValidation(
+		    string groupName,
+		    bool acceptNull = false,
+			object target = null
+	    ) : this(groupName, acceptNull, null, 1, target)
+	    {
+		  
+	    }
+
+
+
 		/// <summary>
 		/// Creates a null validation.
 		/// </summary>

@@ -23,7 +23,7 @@ namespace SimpleCompositeValidation.Validations
         public StringMinimumLengthValidation(
             string groupName,
             int minimumLength,
-            string target = null)
+            string target)
             : this(groupName, minimumLength, null, 1,target)
         {
         }

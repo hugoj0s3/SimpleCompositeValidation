@@ -14,16 +14,28 @@ namespace SimpleCompositeValidation.Validations
 		/// </summary>
         public string Pattern { get; }
 
-        /// <summary>
-        /// Creates Regular expression validation
-        /// </summary>
-        /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-        /// <param name="pattern">Regular expression</param>
-        /// <param name="target">Target to be validated</param>
-       public RegExValidation(
+	    /// <summary>
+	    /// Creates Regular expression validation
+	    /// </summary>
+	    /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+	    /// <param name="pattern">Regular expression</param>
+	    public RegExValidation(
+		    string groupName,
+		    string pattern)
+		    : this(groupName, pattern, null)
+	    {
+	    }
+
+		/// <summary>
+		/// Creates Regular expression validation
+		/// </summary>
+		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+		/// <param name="pattern">Regular expression</param>
+		/// <param name="target">Target to be validated</param>
+		public RegExValidation(
             string groupName,
             string pattern,
-            string target = null)
+            string target)
             : this(groupName, pattern, null, 1, target)
         {
         }
@@ -61,7 +73,7 @@ namespace SimpleCompositeValidation.Validations
             {
                 failures.Add(new Failure(this));
             }
-
+			
             return failures;
         }
     }
