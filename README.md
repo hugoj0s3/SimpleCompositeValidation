@@ -26,7 +26,7 @@ Note that NotNull, MinimumLength, MaximumLength, Email, RegEx, MustNot, Must are
 ```csharp
         public class CustomValidation : Validation<Person>
         {
-          private const string CustomMessage = "A person who are under 16 can not have driver license";
+          private const string CustomMessage = "A person who is under 16 can not have driver license";
           public CustomValidation(
               string groupName,
               Person target = null)
