@@ -14,7 +14,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             const string groupName = "NullObject";
             const string message = "TestError";
             const int severtiy = 999;
-            var validation = new NullValidation(groupName, false, message, severtiy, new object());
+            var validation = new NullValidation(groupName, message, false, severtiy, new object());
 
             // Act
             var result = validation.Update(null);
@@ -33,9 +33,9 @@ namespace SimpleCompositeValidation.UnitTests.Validations
         {
             // Arrange
             const string groupName = "Object";
-            var defaultMessage = $"{groupName} must be null";
+            var message = $"{groupName} must be null";
             const int defaultSevertiy = 1;
-            var validation = new NullValidation(groupName, true, null);
+            var validation = new NullValidation(groupName, message, true);
 
             // Act
             var result = validation.Update(new object());
@@ -43,7 +43,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             // Assert 
             result.IsValid.ShouldBeFalse();
             result.Failures.Count.ShouldBe(1);
-            result.Failures.Single().Message.ShouldBe(defaultMessage);
+            result.Failures.Single().Message.ShouldBe(message);
             result.Failures.Single().GroupName.ShouldBe(groupName);
             result.Failures.Single().Severity.ShouldBe(defaultSevertiy);
         }

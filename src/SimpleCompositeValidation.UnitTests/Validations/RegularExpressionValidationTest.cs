@@ -41,10 +41,10 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             var target = "Hugo";
 
             var validation =
-                new RegExValidation(groupName, pattern, target);
+                new RegExValidation(groupName, pattern);
 
             // Act
-            var result = validation.Update();
+            var result = validation.Update(target);
 
             // Assert
             result.ShouldBe(validation);

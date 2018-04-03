@@ -16,7 +16,7 @@ namespace SimpleCompositeValidation.Validations
         public StringMaximumLengthValidation(
             string groupName,
             int maximumLength)
-            : this(groupName, maximumLength, null)
+            : this(groupName, maximumLength, "{0} the characters length limit is {1}")
         {
         }
 
@@ -24,29 +24,25 @@ namespace SimpleCompositeValidation.Validations
             string groupName,
             int maximumLength,
             string target)
-            : this(groupName, maximumLength, null, 1, target)
+            : this(groupName, maximumLength, "{0} the characters length limit is {1}", 1, target)
         { 
         }
 
         public StringMaximumLengthValidation(
             string groupName, 
             int maximumLength, 
-            string message = null, 
+            string formatMessage = "{0} the characters length limit is {1}", 
             int severity = 1,
             string target = null) 
-            : base(groupName, message, target, severity)
+            : base(groupName, formatMessage, target, severity)
         {
-            if (message == null)
-            {
-                message = $"{groupName} the characters length limit is {maximumLength}";
-            }
             MaximumLength = maximumLength;
-            Message = message;
         }
 
+	    public override string Message => string.Format(FormatMessage, GroupName, MaximumLength);
 
-	    /// <inheritdoc />
-	    protected override IList<Failure> Validate()
+		/// <inheritdoc />
+		protected override IList<Failure> Validate()
         {
             var failures = new List<Failure>();
             if (Target.Length > MaximumLength)

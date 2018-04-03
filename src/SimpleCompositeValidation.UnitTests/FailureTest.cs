@@ -12,7 +12,7 @@ namespace SimpleCompositeValidation.UnitTests
         {
             // Arrange
             string customMessage = "CustomMessage";
-            var validation = new ValidationTest("groupName", "message");
+            var validation = new ValidationTest("groupName", "formatMessage");
 
             // Act
             var failure = new Failure(validation, customMessage);
@@ -25,8 +25,8 @@ namespace SimpleCompositeValidation.UnitTests
 
         private class ValidationTest : Validation<string>
         {
-            public ValidationTest(string groupName, string message, int severity = 1) 
-                : base(groupName, message, severity)
+            public ValidationTest(string groupName, string formatMessage, int severity = 1) 
+                : base(groupName, formatMessage, severity)
             {
             }
 

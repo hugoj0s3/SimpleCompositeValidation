@@ -18,7 +18,7 @@ namespace SimpleCompositeValidation.Base
 		string GroupName { get; }
 
 		/// <summary>
-		/// Default message to be applied in the failures
+		/// Default formatMessage to be applied in the failures
 		/// </summary>
 		string Message { get; }
 

@@ -20,7 +20,9 @@ namespace SimpleCompositeValidation.Base
 	    public string GroupName { get; protected set; }
 
 	    /// <inheritdoc />
-	    public string Message { get; protected set; }
+	    public virtual string Message => string.Format(FormatMessage, GroupName);
+
+		protected string FormatMessage { get; set; }
 
 	    /// <inheritdoc />
 	    public IReadOnlyCollection<Failure> Failures { get; protected set; }
@@ -32,17 +34,17 @@ namespace SimpleCompositeValidation.Base
 		/// Creates a validation with given parameters.
 		/// </summary>
 		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-		/// <param name="message">Default message to be applied in the failures</param>
+		/// <param name="formatMessage">format of message to be applied in the failures "{0} is the groupName"</param>
 		/// <param name="target">Target to be validated</param>
 		/// <param name="severity">Severity in case of failure</param>
 		protected Validation(
             string groupName,
-            string message,
+            string formatMessage,
             T target,  int severity = 1)
         {
             GroupName = groupName;
             Target = target;
-            Message = message;
+	        FormatMessage = formatMessage;
             Severity = severity;
             Failures = new List<Failure>().AsReadOnly();
         }
@@ -51,11 +53,11 @@ namespace SimpleCompositeValidation.Base
 		/// Creates a validation with given parameters. The target be initialized with the default value(default(T)).
 		/// </summary>
 		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-		/// <param name="message">Default message to be applied in the failures</param>
+		/// <param name="formatMessageult formatMessage to be applied in the failures</param>
 		/// <param name="severity">Severity in case of failure</param>
 		protected Validation(
-            string groupName, string message, int severity = 1)
-            : this(groupName, message, default(T), severity)
+            string groupName, string formatMessage, int severity = 1)
+            : this(groupName, formatMessage, default(T), severity)
         {
 
         }

@@ -12,12 +12,12 @@ namespace SimpleCompositeValidation.Validations
     {
         public Func<T, bool> Rule { get; }
 
-	    /// <summary>
-	    /// Creates a validation with given parameters.
-	    /// </summary>
-	    /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-	    /// <param name="rule">Condition</param>
-	    public MustValidation(
+		/// <summary>
+		/// Creates a validation with given parameters.
+		/// </summary>
+		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+		/// <param name="rule">Condition</param>
+		public MustValidation(
 		    string groupName,
 		    Func<T, bool> rule)
 		    : this(groupName, rule, default(T))
@@ -35,33 +35,28 @@ namespace SimpleCompositeValidation.Validations
             string groupName,
             Func<T, bool> rule,
             T target)
-            : this(groupName, rule, null, 1, target)
+            : this(groupName, rule, "{0} is not valid", 1, target)
         {
            
         }
 
-        /// <summary>
-        /// Creates a validation with given parameters.
-        /// </summary>
-        /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-        /// <param name="message">Default message to be applied in the failures</param>
-        /// <param name="target">Target to be validated</param>
-        /// <param name="rule">Condition</param>
-        /// <param name="severity">Severity in case of failure</param>
-        public MustValidation(
+		/// <summary>
+		/// Creates a validation with given parameters.
+		/// </summary>
+		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+		/// <param name="formatMessage">format of message to be applied in the failures "{0} is the groupName"</param>
+		/// <param name="target">Target to be validated</param>
+		/// <param name="rule">Condition</param>
+		/// <param name="severity">Severity in case of failure</param>
+		public MustValidation(
             string groupName,
             Func<T, bool> rule, 
-            string message = null, 
+            string formatMessage = "{0} is not valid", 
             int severity = 1,
 	        T target = default(T)) 
-            : base(groupName, null, target, severity)
+            : base(groupName, formatMessage, target, severity)
         {
-            if (message == null)
-            {
-                message = $"{groupName} is not valid";
-            }
             Rule = rule;
-            Message = message;
         }
 
         protected override IList<Failure> Validate()

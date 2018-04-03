@@ -1,4 +1,6 @@
-﻿namespace SimpleCompositeValidation.Validations
+﻿using SimpleCompositeValidation.Base;
+
+namespace SimpleCompositeValidation.Validations
 {
 	/// <summary>
 	/// Validates an email.
@@ -35,21 +37,15 @@
 		/// Creates an EmailValidation
 		/// </summary>
 		/// <param name="groupName"></param>
-		/// <param name="message"></param>
+		/// <param name="formatMessageram>
 		/// <param name="severity"></param>
 		/// <param name="target"></param>
 		public EmailValidation(string groupName,  
-            string message = null, 
+            string formatMessage = "{0} Email is not valid", 
             int severity = 1,
 	        string target = null) 
-            : base(groupName, EmailPattern, message, severity, target)
+            : base(groupName, EmailPattern, formatMessage, severity, target)
         {
-            if (message == null)
-            {
-                message = $"{groupName} Email is not valid";
-            }
-
-            Message = message;
         }
     }
 }

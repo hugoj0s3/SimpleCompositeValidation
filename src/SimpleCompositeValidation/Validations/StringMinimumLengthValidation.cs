@@ -16,7 +16,7 @@ namespace SimpleCompositeValidation.Validations
         public StringMinimumLengthValidation(
             string groupName,
             int minimumLength)
-            : this(groupName, minimumLength, null)
+            : this(groupName, minimumLength, "{0} requires at least {1} characters")
         {
         }
 
@@ -24,27 +24,24 @@ namespace SimpleCompositeValidation.Validations
             string groupName,
             int minimumLength,
             string target)
-            : this(groupName, minimumLength, null, 1,target)
+            : this(groupName, minimumLength, "{0} requires at least {1} characters", 1,target)
         {
         }
 
         public StringMinimumLengthValidation(
             string groupName, 
             int minimumLength, 
-            string message = null, 
+            string formatMessage = "{0} requires at least {1} characters", 
             int severity = 1,
             string target = null) 
-            : base(groupName, message, target, severity)
+            : base(groupName, formatMessage, target, severity)
         {
-            if (message == null)
-            {
-                message = $"{groupName} requires at least {minimumLength} characters";
-            }
-            MinimumLength = minimumLength;
-            Message = message;
+            MinimumLength = minimumLength;   
         }
 
-        protected override IList<Failure> Validate()
+	    public override string Message => string.Format(FormatMessage, GroupName, MinimumLength);
+
+	    protected override IList<Failure> Validate()
         {
             var failures = new List<Failure>();
             if (Target.Length < MinimumLength)

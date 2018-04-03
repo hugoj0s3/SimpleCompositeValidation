@@ -16,35 +16,36 @@ namespace SimpleCompositeValidation
             = new Dictionary<Type, IList<FuncValidation>>();
 
 		/// <summary>
-		/// Creates composite validation with a summary message that will be inserted in the top of failures list.
+		/// Creates composite validation with a summary formatMessage that will be inserted in the top of failures list.
 		/// </summary>
 		/// <param name="target">Target to be validated</param>
 		/// <param name="summaryMessage">Message that will be inserted as the first item in case of failure</param>
 		public CompositeValidation(T target, string summaryMessage)
-            : base(typeof(T).Name, summaryMessage, target)
-        {
-        }
+            : base(typeof(T).Name, string.Empty, target)
+		{
+			SummaryMessage = summaryMessage;
+		}
 
 		/// <summary>
-		/// Creates composite validation without a summary message, choosing this constructor no message will be inserted in the top of failures list.
+		/// Creates composite validation without a summary formatMessage, choosing this constructor no formatMessage will be inserted in the top of failures list.
 		/// </summary>
 		/// <param name="target">Target to be validated</param>
 		public CompositeValidation(T target)
-            : this(target, null)
+            : this(target, string.Empty)
         {
         }
 		/// <summary>
-		///  Creates composite validation with a summary message that will be inserted in the top of failures list. 
+		///  Creates composite validation with a summary formatMessage that will be inserted in the top of failures list. 
 		///  The target be initialized with the default value(default(T)).
 		/// </summary>
-		/// <param name="summaryMessage">Message that will be inserted as the first item in case of failure</param>
+		/// <param name="summaryMessage">FormatMessage that will be inserted as the first item in case of failure</param>
 		public CompositeValidation(string summaryMessage)
             : this(default(T), summaryMessage)
         {
         }
 
 		/// <summary>
-		///  Creates composite validation without a summary message, choosing this constructor no message will be inserted in the top of failures list.
+		///  Creates composite validation without a summary formatMessage, choosing this constructor no formatMessage will be inserted in the top of failures list.
 		///  The target be initialized with the default value(default(T)).
 		/// </summary>
 		public CompositeValidation()
@@ -137,13 +138,15 @@ namespace SimpleCompositeValidation
                 .Select(x => x.Validation)
                 .ToList().AsReadOnly();
 
-        public bool HasSummaryMessage => !string.IsNullOrEmpty(Message);
+        public bool HasSummaryMessage => !string.IsNullOrEmpty(SummaryMessage);
 
-        public string SummaryMessage => Message;
+        public string SummaryMessage { get; protected set; }
 
-        /// <summary>
+	    public override string Message => SummaryMessage;
+
+	    /// <summary>
         /// Validates the target and return the list of failures
-        /// It inserts a failure in the top of the list if there is a failure in any of validations added and the summary message was set in the constructor
+        /// It inserts a failure in the top of the list if there is a failure in any of validations added and the summary formatMessage was set in the constructor
         /// </summary>
         /// <returns>a list of failures, it might be empty if there are no fails</returns>
         protected override IList<Failure> Validate()
@@ -153,7 +156,7 @@ namespace SimpleCompositeValidation
 
             Update(_validations.Values.SelectMany(x => x), failures);
 
-            if (failures.Any() && Message != null)
+            if (failures.Any() && HasSummaryMessage)
             {
                 failures.Insert(0, new Failure(this));
             }
@@ -180,13 +183,13 @@ namespace SimpleCompositeValidation
                 item.UpdateAction.Invoke(targetMember);
                 var itemFailures = item.Validation.Failures;
 
-                if (!(item.Validation.IsValid) && item.StopIfInvalid)
-                {
-                    break;
-                }
-
                 failures.AddRange(itemFailures);
-            }
+
+	            if (!(item.Validation.IsValid) && item.StopIfInvalid)
+	            {
+		            break;
+	            }
+			}
         }
 
         private class FuncValidation

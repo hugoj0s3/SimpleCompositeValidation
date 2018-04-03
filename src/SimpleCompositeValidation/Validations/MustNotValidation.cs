@@ -41,17 +41,17 @@ namespace SimpleCompositeValidation.Validations
         /// Creates a validation with given parameters.
         /// </summary>
         /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-        /// <param name="message">Default message to be applied in the failures</param>
+        /// <param name="formatMessageult formatMessage to be applied in the failures</param>
         /// <param name="target">Target to be validated</param>
         /// <param name="rule">Condition</param>
         /// <param name="severity">Severity in case of failure</param>
         public MustNotValidation(
             string groupName,
             Func<T, bool> rule,
-            string message = null,
+            string formatMessage = null,
             int severity = 1,
             T target = default(T))
-            : base(groupName, x => !rule.Invoke(x), message, severity, target)
+            : base(groupName, x => !rule.Invoke(x), formatMessage, severity, target)
         {
 
         }

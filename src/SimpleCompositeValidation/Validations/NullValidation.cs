@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using SimpleCompositeValidation.Base;
@@ -10,13 +11,15 @@ namespace SimpleCompositeValidation.Validations
 	/// </summary>
     public sealed class NullValidation: IValidation<object> 
     {
-		/// <summary>
+	    private readonly string _formatMessage;
+
+	    /// <summary>
 		/// Define if validation accept or not accept null.
 		/// </summary>
         public bool AcceptNull { get; }
 
 	    /// <inheritdoc />
-	    public string Message { get; }
+	    public string Message => string.Format(_formatMessage, GroupName);
 
 	    /// <inheritdoc />
 	    public int Severity { get; }
@@ -38,45 +41,23 @@ namespace SimpleCompositeValidation.Validations
 		/// Creates a null validation.
 		/// </summary>
 		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-		/// <param name="acceptNull">Define if validation accept or not accept null.</param>
-		/// <param name="target">Target to be validated. by default it is null</param>
-		public NullValidation(
-		    string groupName,
-		    bool acceptNull = false,
-			object target = null
-	    ) : this(groupName, acceptNull, null, 1, target)
-	    {
-		  
-	    }
-
-
-
-		/// <summary>
-		/// Creates a null validation.
-		/// </summary>
-		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-		/// <param name="message">Default message to be applied in the failures</param>
+		/// <param name="formatMessage">Default formatMessage to be applied in the failures</param>
 		/// <param name="target">Target to be validated. by default it is null</param>
 		/// <param name="acceptNull">Define if validation accept or not accept null.</param>
 		/// <param name="severity">Severity in case of failure</param>
 		public NullValidation(
             string groupName,
-            bool acceptNull = false, 
-            string message = null, 
-            int severity = 1,
+            string formatMessage = "{0} must not be null",
+            bool acceptNull = false,
+			int severity = 1,
             object target = null
             ) 
         {
-            if (message == null)
-            {
-                var nullText = acceptNull ? string.Empty : "not ";
-                message = $"{groupName} must {nullText}be null";
-            }
-
+	        _formatMessage = formatMessage;
+	      
             GroupName = groupName;
             Target = target;
             AcceptNull = acceptNull;
-            Message = message;
             Severity = severity;
             Failures = new List<Failure>().AsReadOnly();
         }
