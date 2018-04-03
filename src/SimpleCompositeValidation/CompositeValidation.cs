@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using SimpleCompositeValidation.Base;
+using SimpleCompositeValidation.Exceptions;
 
 namespace SimpleCompositeValidation
 {
@@ -12,8 +13,7 @@ namespace SimpleCompositeValidation
     /// <typeparam name="T">Type of the Target that will be validated</typeparam>
     public class CompositeValidation<T> : Validation<T> 
     {
-        private readonly IDictionary<Type, IList<FuncValidation>> _validations 
-            = new Dictionary<Type, IList<FuncValidation>>();
+        private readonly IList<FuncValidation> _validations = new List<FuncValidation>();
 
 		/// <summary>
 		/// Creates composite validation with a summary formatMessage that will be inserted in the top of failures list.
@@ -66,14 +66,9 @@ namespace SimpleCompositeValidation
             Func<T, TMember> member,
             bool stopIfInvalid = false)
         {
-            if (!_validations.TryGetValue(typeof(TMember), out var validations))
-            {
-                validations = new List<FuncValidation>();
-                _validations.Add(typeof(TMember), validations);
-            }
-
+         
             var funcValidation = new FuncValidation(validation, x => member.Invoke(x), x => validation.Update((TMember)x), stopIfInvalid);
-            validations.Add(funcValidation);
+            _validations.Add(funcValidation);
 
             return this;
         }
@@ -87,56 +82,45 @@ namespace SimpleCompositeValidation
 		/// <returns>Itself</returns>
 		public IValidation<T> Update<TMember>(string groupName, TMember value)
         {
-			
-            var failures = Failures.Where(x => x.GroupName != groupName).ToList();
 
-	        bool noFailuresBefore = !failures.Any();
+	        var newFailures = Update(_validations.Where(x => x.Validation.GroupName == groupName), item => value);
 
-            Update(_validations[typeof(TMember)]
-                .Where(x => x.Validation.GroupName == groupName), failures, item => value, false);
-
-	        if (failures.Any() && HasSummaryMessage && noFailuresBefore)
-	        {
-		        failures.Insert(0, new Failure(this));
-	        }
-
-			Failures = new ReadOnlyCollection<Failure>(failures);
-
-            return this;
-        }
+	        return UpdateList(groupName, newFailures);
+		}
 
 		/// <summary>
 		/// Update partially according with group name passed.
 		/// </summary>
-		/// <typeparam name="TMember">Type of the member</typeparam>
 		/// <param name="groupName">Group name</param>
 		/// <returns>Itself</returns>
-		public IValidation<T> Update<TMember>(string groupName)
-        {
-            var failures = Failures.Where(x => x.GroupName != groupName).ToList();
+		public IValidation<T> Update(string groupName)
+		{
 
-	        var noFailuresBefore = !failures.Any();
+			var newFailures = Update(_validations.Where(x => x.Validation.GroupName == groupName));
 
-			Update(_validations[typeof(TMember)]
-                .Where(x => x.Validation.GroupName == groupName), failures);
+			return UpdateList(groupName, newFailures);
+		}
 
-            Failures = new ReadOnlyCollection<Failure>(failures);
+		/// <summary>
+		/// Update partially according with group name and target passed.
+		/// </summary>
+		/// <param name="target">Target to be validated</param>
+		/// <param name="groupName">Group name</param>
+		/// <returns>Itself</returns>
+		public IValidation<T> Update(T target, string groupName)
+	    {
+		    Target = target;
+		    return Update(groupName);
+	    }
 
-	        if (failures.Any() && HasSummaryMessage && noFailuresBefore)
-	        {
-		        failures.Insert(0, new Failure(this));
-	        }
-			return this;
-        }
-
-        /// <summary>
-        /// Validations added
-        /// </summary>
-        public IReadOnlyCollection<IValidation> Validations =>
-            _validations.Values
-                .SelectMany(x => x)
-                .Select(x => x.Validation)
-                .ToList().AsReadOnly();
+		/// <summary>
+		/// Validations added
+		/// </summary>
+		public IReadOnlyCollection<IValidation> Validations => 
+			_validations
+				.Select(x => x.Validation)
+				.ToList()
+				.AsReadOnly();
 
         public bool HasSummaryMessage => !string.IsNullOrEmpty(SummaryMessage);
 
@@ -152,9 +136,7 @@ namespace SimpleCompositeValidation
         protected override IList<Failure> Validate()
         {
 
-            var failures = new List<Failure>();
-
-            Update(_validations.Values.SelectMany(x => x), failures);
+            var failures = Update(_validations);
 
             if (failures.Any() && HasSummaryMessage)
             {
@@ -164,20 +146,25 @@ namespace SimpleCompositeValidation
             return failures;
         }
 
-        private void Update(IEnumerable<FuncValidation> validations, List<Failure> failures) 
+        private List<Failure> Update(IEnumerable<FuncValidation> validations) 
         {
-            Update(validations, failures, item => item.MemberFunc.Invoke(Target));
+
+            return Update(validations, item => Target == null ? null : item.MemberFunc.Invoke(Target));
         }
 
-        private void Update(IEnumerable<FuncValidation> validations, List<Failure> failures,
-            Func<FuncValidation, object> func, bool verifyTargetNull = true)
+        private List<Failure> Update(IEnumerable<FuncValidation> validations,
+            Func<FuncValidation, object> func)
         {
-            if (Target == null && verifyTargetNull)
-            {
-                return;
-            }
+			var failures = new List<Failure>();
 
-            foreach (var item in validations)
+	        var funcValidations = validations.ToList();
+
+	        if (!funcValidations.Any())
+	        {
+		        throw new ValidationsNotFoundException();
+	        }
+
+            foreach (var item in funcValidations)
             {
                 var targetMember = func.Invoke(item);
                 item.UpdateAction.Invoke(targetMember);
@@ -190,9 +177,24 @@ namespace SimpleCompositeValidation
 		            break;
 	            }
 			}
-        }
 
-        private class FuncValidation
+	        return failures;
+        }
+	    private IValidation<T> UpdateList(string groupName, List<Failure> newFailures)
+	    {
+		    var oldFailures = Failures.Where(x => x.GroupName != groupName).ToList();
+
+		    if (newFailures.Any() && HasSummaryMessage && !oldFailures.Any())
+		    {
+			    oldFailures.Insert(0, new Failure(this));
+		    }
+
+			Failures = new ReadOnlyCollection<Failure>(oldFailures.Concat(newFailures).ToList());
+
+		    return this;
+	    }
+
+		private class FuncValidation
         {
             public FuncValidation(
                 IValidation validation, 
@@ -211,5 +213,4 @@ namespace SimpleCompositeValidation
             public bool StopIfInvalid { get; }
         }
     }
-
 }

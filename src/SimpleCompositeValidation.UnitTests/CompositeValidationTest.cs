@@ -58,7 +58,7 @@ namespace SimpleCompositeValidation.UnitTests
             
 
             // Act
-            validation.Update<string>("LastName");
+            validation.Update("LastName");
 
             // Assert
             firstNameMock.Verify(x => x.Update(person.FirstName), Times.Never);
@@ -80,7 +80,7 @@ namespace SimpleCompositeValidation.UnitTests
             var ageValidationMock = allValidation.AgeValidationMock;
 
             // Act
-            validation.Update<string>("LastName");
+            validation.Update("LastName");
 
             // Assert
             firstNameMock.Verify(x => x.Update(person.FirstName), Times.Never);
@@ -149,27 +149,6 @@ namespace SimpleCompositeValidation.UnitTests
 		    validation.Failures.Count.ShouldBe(2);
 		    validation.Failures.First().Message.ShouldBe(summaryMessage);
 		}
-
-		[Fact]
-        public void Update_ForcingNull_ItNeverPerformsValidation()
-        {
-            // Arrange
-            var validation = new CompositeValidation<Person>();
-            var allValidation = MockAllValidations(validation);
-            var firstNameMock = allValidation.FirstNameMock;
-            var lastNameMock = allValidation.LastNameMock;
-            var hasDriverLicenseMock = allValidation.HasDriverLicenseMock;
-            var ageValidationMock = allValidation.AgeValidationMock;
-
-            // Act
-            validation.Update<string>("LastName");
-
-            // Assert
-            firstNameMock.Verify(x => x.Update(It.IsAny<string>()), Times.Never);
-            lastNameMock.Verify(x => x.Update(It.IsAny<string>()), Times.Never);
-            hasDriverLicenseMock.Verify(x => x.Update(It.IsAny<bool>()), Times.Never);
-            ageValidationMock.Verify(x => x.Update(It.IsAny<int>()), Times.Never);
-        }
 
 	    [Fact]
 	    public void NotEmpty_AddingNotEmptyString_ItAddsNotEmptyStringValidation()

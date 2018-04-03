@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Moq;
 using Shouldly;
 using SimpleCompositeValidation.Base;
 using Xunit;
@@ -12,7 +13,7 @@ namespace SimpleCompositeValidation.UnitTests
         {
             // Arrange
             string customMessage = "CustomMessage";
-            var validation = new ValidationTest("groupName", "formatMessage");
+            var validation = new Mock<Validation<object>>("groupName", "formatMessage", 1).Object;
 
             // Act
             var failure = new Failure(validation, customMessage);
@@ -23,17 +24,6 @@ namespace SimpleCompositeValidation.UnitTests
             failure.Severity.ShouldBe(validation.Severity);
         }
 
-        private class ValidationTest : Validation<string>
-        {
-            public ValidationTest(string groupName, string formatMessage, int severity = 1) 
-                : base(groupName, formatMessage, severity)
-            {
-            }
-
-            protected override IList<Failure> Validate()
-            {
-                return new List<Failure>();
-            }
-        }
+   
     }
 }

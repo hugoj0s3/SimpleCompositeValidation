@@ -39,10 +39,10 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             var target = "testhugo@gmail.com";
        
             var validation =
-                new EmailValidation(groupName, target);
+                new EmailValidation(groupName);
 
             // Act
-            var result = validation.Update();
+            var result = validation.Update(target);
 
             // Assert
             validation.ShouldBe(result);

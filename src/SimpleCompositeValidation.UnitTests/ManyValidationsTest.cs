@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Shouldly;
+using SimpleCompositeValidation.Exceptions;
 using SimpleCompositeValidation.Extensions;
 using SimpleCompositeValidation.Validations;
 using Xunit;
@@ -120,7 +121,116 @@ namespace SimpleCompositeValidation.UnitTests
 
         }
 
-        private class Person
+	    [Fact]
+	    public void UpdatePartially_UpdatingPartiallyAGroupName_ItRaisesFailuresCorrectly()
+	    {
+		    //Arrange
+		    var person = new Person()
+		    {
+			    FirstName = null,
+			    LastName = null,
+			    Email = "hugo@testemail.com.br",
+			    Phone = "+5501234567",
+			    BirthDate = DateTime.Now.AddYears(-20)
+		    };
+
+		    // Act
+		    _personValidation.Update(person);
+		    person.LastName = "Hugo";
+		    _personValidation.Update(person, "LastName");
+
+			// Assert 
+			_personValidation.IsValid.ShouldBeFalse();
+		    _personValidation.Failures.Count.ShouldBe(1);
+
+		    _personValidation.Failures.Single(x => x.GroupName == nameof(Person.FirstName))
+			    .Validation.ShouldBeOfType<NullValidation>();
+
+	    }
+
+	    [Fact]
+	    public void UpdatePartially2_UpdatingPartiallyAGroupName_ItRaisesFailuresCorrectly()
+	    {
+		    //Arrange
+		    var person = new Person()
+		    {
+			    FirstName = null,
+			    LastName = "Hugo",
+			    Email = "hugo@testemail.com.br",
+			    Phone = "+5501234567",
+			    BirthDate = DateTime.Now.AddYears(-20)
+		    };
+
+		    // Act
+		    _personValidation.Update(person);
+		    person.LastName = null;
+		    _personValidation.Update("LastName");
+
+		    // Assert 
+		    _personValidation.IsValid.ShouldBeFalse();
+		    _personValidation.Failures.Count.ShouldBe(2);
+
+		    _personValidation.Failures.Single(x => x.GroupName == nameof(Person.FirstName))
+			    .Validation.ShouldBeOfType<NullValidation>();
+
+		    _personValidation.Failures.Single(x => x.GroupName == nameof(Person.LastName))
+			    .Validation.ShouldBeOfType<NullValidation>();
+
+		}
+
+	    [Fact]
+	    public void UpdatePartially3_UpdatingPartiallyAGroupName_ItRaisesFailuresCorrectlyWithTheSummaryMessage()
+	    {
+			//Arrange
+		    var summaryMessage = "#TestSummaryMessage";
+		    var validations = new CompositeValidation<Person>(summaryMessage)
+			    .NotNull(nameof(Person.FirstName), x => x.FirstName)
+			    .MinimumLength(nameof(Person.FirstName), x => x.FirstName, 3)
+			    .MaximumLength(nameof(Person.FirstName), x => x.FirstName, 10)
+			    .NotNull(nameof(Person.LastName), x => x.LastName)
+			    .MinimumLength(nameof(Person.LastName), x => x.LastName, 3)
+			    .MaximumLength(nameof(Person.LastName), x => x.LastName, 10);
+
+
+			var person = new Person()
+		    {
+			    FirstName = "Hugo",
+			    LastName = "Jose",
+			    Email = "hugo@testemail.com.br",
+			    Phone = "+5501234567",
+			    BirthDate = DateTime.Now.AddYears(-20)
+		    };
+
+		    // Act
+		    validations.Update(person);
+		    validations.Update("LastName", "J");
+
+		    // Assert 
+		    validations.IsValid.ShouldBeFalse();
+		    validations.Failures.Count.ShouldBe(2);
+
+		    validations.Failures.First().Validation.ShouldBe(validations);
+
+		    validations.Failures.Select(x => x.Validation)
+			    .OfType<CompositeValidation<Person>>().Single()
+			    .SummaryMessage.ShouldBe(summaryMessage);
+
+		    validations.Failures.Single(x => x.GroupName == nameof(Person.LastName))
+			    .Validation.ShouldBeOfType<StringMinimumLengthValidation>();
+		}
+
+	    [Fact]
+	    public void UpdatePartially3_UpdatingPartiallyWithNotFoundGroupName_ItThrowValidationsNotFoundException()
+	    {
+		    // Act
+		    Action act = () => _personValidation.Update("##NotFound");
+
+		    // Assert 
+		    act.ShouldThrow<ValidationsNotFoundException>();
+
+	    }
+
+		private class Person
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }
