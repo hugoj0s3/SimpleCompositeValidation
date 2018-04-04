@@ -1,8 +1,8 @@
-# SimpleValidationComposite 
+# Simple Validation Composite 
  Simple validation library based on composition. It aims to simplify the composition and reuse of validations logics. The idea is: You create single and simple validations, and then you add those validations to validate an entire model. 
   
 
-## Compositing:
+## Validating a model:
 ```csharp
      CompositeValidation<Person> Validation = new CompositeValidation<Person>()
                 .NotNull(nameof(Person.FirstName), x => x.FirstName) 
@@ -26,23 +26,24 @@ Note that NotNull, MinimumLength, MaximumLength, Email, RegEx, MustNot, Must are
 ```csharp
         public class CustomValidation : Validation<Person>
         {
-            private const string message = "A person who are under 16 can not have driver license";
-            public CustomValidation(
-                string groupName, 
-                Person target = null) 
-                : base(groupName, message, target, 1)
-            {
-            }
+          private const string CustomMessage = "A person who is under 16 can not have driver license";
+          public CustomValidation(
+              string groupName,
+              Person target = null)
+              : base(groupName, CustomMessage, target, 1)
+          {
+          }
 
-            protected override IList<Failure> Validate()
-            {
-                var failures = new List<Failure>();
-                if (Target.HasDriverLicense && Target.Age < 16)
-                {
-                    failures.Add(new Failure(this));
-                }
+          protected override IList<Failure> Validate()
+          {
+              var failures = new List<Failure>();
+              if (Target.HasDriverLicense && Target.Age < 16)
+              {
+                  failures.Add(new Failure(this));
+              }
 
-                return failures;
-            }
-        }
+              return failures;
+          }
+
+     }
 ```

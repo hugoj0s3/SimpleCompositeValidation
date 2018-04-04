@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Shouldly;
 using SimpleCompositeValidation.Validations;
 using Xunit;
@@ -20,7 +17,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             var severity = 999;
 
             var validation =
-                new EmailValidation(groupName, target, message, severity);
+                new EmailValidation(groupName, message, severity, target);
 
             // Act
             var result = validation.Update();
@@ -42,10 +39,10 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             var target = "testhugo@gmail.com";
        
             var validation =
-                new EmailValidation(groupName, target);
+                new EmailValidation(groupName);
 
             // Act
-            var result = validation.Update();
+            var result = validation.Update(target);
 
             // Assert
             validation.ShouldBe(result);

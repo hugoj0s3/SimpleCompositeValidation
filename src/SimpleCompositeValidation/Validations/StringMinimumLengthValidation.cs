@@ -1,39 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using SimpleCompositeValidation.Base;
 
 namespace SimpleCompositeValidation.Validations
 {
+    /// <summary>
+    ///  Validates a string requiring a minimum length.
+    /// </summary>
     public class StringMinimumLengthValidation : Validation<string>
     {
+        /// <summary>
+        ///  Minimum length required
+        /// </summary>
         public int MinimumLength { get; }
-        public StringMinimumLengthValidation(
-            string groupName, 
-            string target, 
-            int minimumLength, 
-            string message = null, 
-            int severity = 1) 
-            : base(groupName, null, target, severity)
-        {
-            if (message == null)
-            {
-                message = $"{groupName} requires at least {minimumLength} characters";
-            }
-            MinimumLength = minimumLength;
-            Message = message;
-        }
 
         public StringMinimumLengthValidation(
-            string groupName, 
-            int minimumLength, 
-            string message = null, 
-            int severity = 1) 
-            : this(groupName, null, minimumLength, message, severity)
+            string groupName,
+            int minimumLength)
+            : this(groupName, minimumLength, "{0} requires at least {1} characters")
         {
         }
 
-        protected override IList<Failure> Validate()
+        public StringMinimumLengthValidation(
+            string groupName,
+            int minimumLength,
+            string target)
+            : this(groupName, minimumLength, "{0} requires at least {1} characters", 1,target)
+        {
+        }
+
+        public StringMinimumLengthValidation(
+            string groupName, 
+            int minimumLength, 
+            string formatMessage = "{0} requires at least {1} characters", 
+            int severity = 1,
+            string target = null) 
+            : base(groupName, formatMessage, target, severity)
+        {
+            MinimumLength = minimumLength;   
+        }
+
+	    public override string Message => string.Format(FormatMessage, GroupName, MinimumLength);
+
+	    protected override IList<Failure> Validate()
         {
             var failures = new List<Failure>();
             if (Target.Length < MinimumLength)

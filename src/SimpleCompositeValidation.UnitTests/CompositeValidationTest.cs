@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using AutoFixture;
 using Moq;
+using Shouldly;
 using SimpleCompositeValidation.Base;
+using SimpleCompositeValidation.Extensions;
 using SimpleCompositeValidation.Validations;
 using Xunit;
 
@@ -30,7 +32,12 @@ namespace SimpleCompositeValidation.UnitTests
             validation.Update();
 
             // Assert
-            firstNameMock.Verify(x => x.Update(person.FirstName), Times.Once);
+			validation.Validations.ShouldContain(firstNameMock.Object);
+	        validation.Validations.ShouldContain(lastNameMock.Object);
+	        validation.Validations.ShouldContain(hasDriverLicenseMock.Object);
+	        validation.Validations.ShouldContain(ageValidationMock.Object);
+
+			firstNameMock.Verify(x => x.Update(person.FirstName), Times.Once);
             lastNameMock.Verify(x => x.Update(person.LastName), Times.Once);
             hasDriverLicenseMock.Verify(x => x.Update(person.HasDriverLicense), Times.Once);
             ageValidationMock.Verify(x => x.Update(person.Age), Times.Once);
@@ -51,7 +58,7 @@ namespace SimpleCompositeValidation.UnitTests
             
 
             // Act
-            validation.Update<string>("LastName");
+            validation.Update("LastName");
 
             // Assert
             firstNameMock.Verify(x => x.Update(person.FirstName), Times.Never);
@@ -73,7 +80,7 @@ namespace SimpleCompositeValidation.UnitTests
             var ageValidationMock = allValidation.AgeValidationMock;
 
             // Act
-            validation.Update<string>("LastName");
+            validation.Update("LastName");
 
             // Assert
             firstNameMock.Verify(x => x.Update(person.FirstName), Times.Never);
@@ -92,7 +99,7 @@ namespace SimpleCompositeValidation.UnitTests
             var lastNameMock = allValidation.LastNameMock;
 
             // Act
-            validation.Update<string>("LastName", lastName);
+            validation.Update("LastName", lastName);
 
             // Assert
             lastNameMock.Verify(x => x.Update(lastName), Times.Once);
@@ -116,35 +123,75 @@ namespace SimpleCompositeValidation.UnitTests
             validation.Update(person);
 
             // Assert
+			validation.IsValid.ShouldBeFalse();
             firstNameMock.Verify(x => x.Update(person.FirstName), Times.Never);
             lastNameMock.Verify(x => x.Update(person.LastName), Times.Never);
             hasDriverLicenseMock.Verify(x => x.Update(person.HasDriverLicense), Times.Never);
             ageValidationMock.Verify(x => x.Update(person.Age), Times.Never);
         }
 
-        [Fact]
-        public void Update_ForcingNull_ItNeverPerformsValidation()
-        {
-            // Arrange
-            var validation = new CompositeValidation<Person>();
-            var allValidation = MockAllValidations(validation);
-            var firstNameMock = allValidation.FirstNameMock;
-            var lastNameMock = allValidation.LastNameMock;
-            var hasDriverLicenseMock = allValidation.HasDriverLicenseMock;
-            var ageValidationMock = allValidation.AgeValidationMock;
+	    [Fact]
+	    public void Update_ForcingFailedValidationAndPassingSummaryMessage_ItInsertsTheSummaryMessage()
+	    {
+		    // Arrange
+		    var person = Fixture.Create<Person>();
+		    var summaryMessage = "#TestSummaryMessage";
+		    var validation = new CompositeValidation<Person>(summaryMessage);
+		    var stopValidation = new MustNotValidation<object>("Failing", x => true);
+		    validation.Add(stopValidation, x => x);
+		   
 
-            // Act
-            validation.Update<string>("LastName");
+		    // Act
+		    validation.Update(person);
 
-            // Assert
-            firstNameMock.Verify(x => x.Update(It.IsAny<string>()), Times.Never);
-            lastNameMock.Verify(x => x.Update(It.IsAny<string>()), Times.Never);
-            hasDriverLicenseMock.Verify(x => x.Update(It.IsAny<bool>()), Times.Never);
-            ageValidationMock.Verify(x => x.Update(It.IsAny<int>()), Times.Never);
-        }
+			// Assert
+			validation.IsValid.ShouldBeFalse();
+		    validation.Failures.Count.ShouldBe(2);
+		    validation.Failures.First().Message.ShouldBe(summaryMessage);
+		}
+
+	    [Fact]
+	    public void NotEmpty_AddingNotEmptyString_ItAddsNotEmptyStringValidation()
+	    {
+			// Arrange
+		    var validation = new CompositeValidation<Person>();
+
+			// Act
+		    validation.NotEmpty("AnyGroupName", x => x.FirstName);
+
+		    // Assert
+			validation.Validations.OfType<NotEmptyStringValidation>().Count().ShouldBe(1);
+	    }
+
+	    [Fact]
+	    public void NotEmpty_AddingNotEmptyList_ItAddsNotEmptyEnumerableValidation()
+	    {
+		    // Arrange
+		    var validation = new CompositeValidation<Person>();
+
+		    // Act
+		    validation.NotEmpty("AnyGroupName", x => new List<object>());
+
+			// Assert
+			validation.Validations.OfType<NotEmptyEnumerableValidation<object>>().Count().ShouldBe(1);
+	    }
+
+	    [Fact]
+	    public void Null_AddingNullValidation_ItAddsNullValidation()
+	    {
+		    // Arrange
+		    var validation = new CompositeValidation<Person>();
+
+		    // Act
+		    validation.Null("AnyGroupName", x => x);
+
+		    // Assert
+		    validation.Validations.Single().ShouldBeOfType<NullValidation>();
+		    validation.Validations.OfType<NullValidation>().Single().AcceptNull.ShouldBeTrue();
+		}
 
 
-        private ValidationsMocked MockAllValidations(CompositeValidation<Person> validation)
+		private ValidationsMocked MockAllValidations(CompositeValidation<Person> validation)
         {
             var firstNameMock = new Mock<IValidation<string>>();
             var lastNameMock = new Mock<IValidation<string>>();
@@ -160,7 +207,12 @@ namespace SimpleCompositeValidation.UnitTests
             hasDriverLicenseMock.Setup(x => x.GroupName).Returns("HasDriverLicense");
             ageValidationMock.Setup(x => x.GroupName).Returns("Age");
 
-            validation.Add(firstNameMock.Object, x => x.FirstName);
+	        firstNameMock.Setup(x => x.Message).Returns("FirstName is not valid");
+	        lastNameMock.Setup(x => x.Message).Returns("LastName is not valid");
+	        hasDriverLicenseMock.Setup(x => x.Message).Returns("HasDriverLicense is not valid");
+	        ageValidationMock.Setup(x => x.Message).Returns("Age is not valid");
+
+			validation.Add(firstNameMock.Object, x => x.FirstName);
             validation.Add(lastNameMock.Object, x => x.LastName);
             validation.Add(hasDriverLicenseMock.Object, x => x.HasDriverLicense);
             validation.Add(ageValidationMock.Object, x => x.Age);
@@ -178,10 +230,18 @@ namespace SimpleCompositeValidation.UnitTests
 
         private class Person
         {
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public bool HasDriverLicense { get; set; }
-            public int Age { get; set; }
+            public Person(string firstName, string lastName, bool hasDriverLicense, int age)
+            {
+                FirstName = firstName;
+                LastName = lastName;
+                HasDriverLicense = hasDriverLicense;
+                Age = age;
+            }
+
+            public string FirstName { get; }
+            public string LastName { get; }
+            public bool HasDriverLicense { get; }
+            public int Age { get; }
         }
 
         private class ValidationsMocked
@@ -195,10 +255,10 @@ namespace SimpleCompositeValidation.UnitTests
                 AgeValidationMock = ageValidationMock;
             }
 
-            public Mock<IValidation<string>> FirstNameMock { get; private set; }
-            public Mock<IValidation<string>> LastNameMock { get; private set; }
-            public Mock<IValidation<bool>> HasDriverLicenseMock { get; private set; }
-            public Mock<IValidation<int>> AgeValidationMock { get; private set; }
+            public Mock<IValidation<string>> FirstNameMock { get; }
+            public Mock<IValidation<string>> LastNameMock { get; }
+            public Mock<IValidation<bool>> HasDriverLicenseMock { get; }
+            public Mock<IValidation<int>> AgeValidationMock { get; }
         }
     }
 }

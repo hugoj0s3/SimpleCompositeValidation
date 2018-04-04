@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Shouldly;
 using SimpleCompositeValidation.Validations;
 using Xunit;
@@ -18,7 +15,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             var invalidString = "abc";
             var defaultMessage = $"{groupName} requires at least 4 characters";
             var defaultSeverity = 1;
-            var validation = new StringMinimumLengthValidation(groupName, invalidString, 4);
+            var validation = new StringMinimumLengthValidation(groupName, 4, invalidString);
             
             // Act
             var result = validation.Update();

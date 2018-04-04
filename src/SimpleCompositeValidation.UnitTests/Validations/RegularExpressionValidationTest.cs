@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Shouldly;
 using SimpleCompositeValidation.Validations;
 using Xunit;
@@ -21,7 +18,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             var defaultMessage = "Name is not valid";
 
             var validation = 
-                new RegularExpressionValidation(groupName, pattern, target);
+                new RegExValidation(groupName, pattern, target);
 
             // Act
             var result = validation.Update();
@@ -44,10 +41,10 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             var target = "Hugo";
 
             var validation =
-                new RegularExpressionValidation(groupName, pattern, target);
+                new RegExValidation(groupName, pattern);
 
             // Act
-            var result = validation.Update();
+            var result = validation.Update(target);
 
             // Assert
             result.ShouldBe(validation);

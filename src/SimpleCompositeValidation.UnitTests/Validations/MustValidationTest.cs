@@ -14,7 +14,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             const string message = "It must be true";
             const int severtiy = 5;
             const string groupName = "InvalidOperation";
-            var mustValidation = new MustValidation<bool>(groupName, false, x => x, message, severtiy);
+            var mustValidation = new MustValidation<bool>(groupName, x => x, message, severtiy, false);
 
             // Act
             var result = mustValidation.Update();
@@ -33,7 +33,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
         {
             // Arrange
             const string groupName = "InvalidOperation";
-            var mustValidation = new MustValidation<bool>(groupName, true, x => x);
+            var mustValidation = new MustValidation<bool>(groupName, x => x, true);
 
             // Act
             var result = mustValidation.Update();
