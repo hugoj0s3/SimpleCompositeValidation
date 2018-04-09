@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using Shouldly;
-using SimpleCompositeValidation.Validations;
+using SimpleCompositeValidation.Validations.String;
 using Xunit;
 
-namespace SimpleCompositeValidation.UnitTests.Validations
+namespace SimpleCompositeValidation.UnitTests.Validations.String
 {
     public class RegularExpressionValidationTest
     {

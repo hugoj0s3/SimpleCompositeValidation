@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace SimpleCompositeValidation.Validations
+namespace SimpleCompositeValidation.Validations.String
 {
     public class NotEmptyStringValidation : MustNotValidation<string>
     {

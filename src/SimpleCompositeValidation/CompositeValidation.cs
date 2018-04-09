@@ -11,8 +11,8 @@ namespace SimpleCompositeValidation
     /// Composite Validation class. Updates the validations added, keeping a list of failures from those validations.
     /// </summary>
     /// <typeparam name="T">Type of the Target that will be validated</typeparam>
-    public class CompositeValidation<T> : Validation<T> 
-    {
+    public class CompositeValidation<T> : Validation<T>, ICompositeValidation<T>
+	{
         private readonly IList<FuncValidation> _validations = new List<FuncValidation>();
 
 		/// <summary>
@@ -56,27 +56,64 @@ namespace SimpleCompositeValidation
         /// <summary>
         /// Add a validation in the composition
         /// </summary>
-        /// <typeparam name="TMember">type of the member</typeparam>
-        /// <param name="validation">validation to validate this member</param>
-        /// <param name="member">Path to obtain the member</param>
-        /// <param name="stopIfInvalid">pass true to stop if it failed on this validation. default is false</param>
+        /// <typeparam name="TMember">type of the members</typeparam>
+        /// <param name="validation">validation to validate this members</param>
+        /// <param name="member">Path to obtain the members</param>
         /// <returns></returns>
         public CompositeValidation<T> Add<TMember>(
             IValidation<TMember> validation, 
-            Func<T, TMember> member,
-            bool stopIfInvalid = false)
+            Func<T, TMember> member)
         {
-         
-            var funcValidation = new FuncValidation(validation, x => member.Invoke(x), x => validation.Update((TMember)x), stopIfInvalid);
+	        var addOnlyFirstMessage = 
+		        (validation as ICompositeValidation<TMember>)?.HasSummaryMessage ?? false;
+
+	        var funcValidation = new FuncValidation
+            (
+	            validation, 
+	            x => member.Invoke(x), 
+	            x => validation.Update((TMember)x),
+				addOnlyFirstMessage
+	        );
+
             _validations.Add(funcValidation);
 
             return this;
         }
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="TMember"></typeparam>
+		/// <param name="validation"></param>
+		/// <param name="members"></param>
+		/// <returns></returns>
+	    public CompositeValidation<T> AddForEach<TMember>(
+		    IValidation<TMember> validation,
+		    Func<T, IEnumerable<TMember>> members)
+	    {
+		    var addOnlyFirstMessage =
+			    (validation as ICompositeValidation<TMember>)?.HasSummaryMessage ?? false;
+
+			var funcValidation = new FuncValidation
+		    (
+			    validation, 
+			    x => members.Invoke(x),
+			    x =>
+			    {
+				    ValidateItems(validation, x);
+			    },
+			    addOnlyFirstMessage
+
+			);
+		    _validations.Add(funcValidation);
+
+		    return this;
+	    }
+
+	    /// <summary>
 		/// Update partially according with group name passed.
 		/// </summary>
-		/// <typeparam name="TMember">Type of the member</typeparam>
+		/// <typeparam name="TMember">Type of the members</typeparam>
 		/// <param name="groupName">Group name</param>
 		/// <param name="value">value to be validated</param>
 		/// <returns>Itself</returns>
@@ -169,13 +206,15 @@ namespace SimpleCompositeValidation
                 var targetMember = func.Invoke(item);
                 item.UpdateAction.Invoke(targetMember);
                 var itemFailures = item.Validation.Failures;
-
-                failures.AddRange(itemFailures);
-
-	            if (!(item.Validation.IsValid) && item.StopIfInvalid)
+	            if (item.AddOnlyFirstMessage)
 	            {
-		            break;
+					failures.Add(itemFailures.FirstOrDefault());
 	            }
+	            else
+	            {
+		            failures.AddRange(itemFailures);
+				}
+
 			}
 
 	        return failures;
@@ -194,23 +233,31 @@ namespace SimpleCompositeValidation
 		    return this;
 	    }
 
+	    private static void ValidateItems<TMember>(IValidation<TMember> validation, object items)
+	    {
+		    foreach (var item in (IEnumerable<TMember>)items)
+		    {
+			    validation.Update(item);
+		    }
+	    }
+
 		private class FuncValidation
         {
             public FuncValidation(
                 IValidation validation, 
                 Func<T, object> memberFunc,
-                Action<object> updateAction,
-                bool stopIfInvalid)
+                Action<object> updateAction, 
+                bool addOnlyFirstMessage = false)
             {
                 Validation = validation;
                 MemberFunc = memberFunc;
-                StopIfInvalid = stopIfInvalid;
                 UpdateAction = updateAction;
+	            AddOnlyFirstMessage = addOnlyFirstMessage;
             }
             public IValidation Validation { get; }
             public Func<T, object> MemberFunc { get; }
             public Action<object> UpdateAction { get; }
-            public bool StopIfInvalid { get; }
+			public bool AddOnlyFirstMessage { get; }
         }
     }
 }

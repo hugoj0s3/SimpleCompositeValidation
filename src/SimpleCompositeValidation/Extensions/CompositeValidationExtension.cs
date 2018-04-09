@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using SimpleCompositeValidation.Validations;
+using SimpleCompositeValidation.Validations.Collections;
+using SimpleCompositeValidation.Validations.String;
 
 namespace SimpleCompositeValidation.Extensions
 {
@@ -136,18 +138,40 @@ namespace SimpleCompositeValidation.Extensions
             return thisValidation;
         }
 
-        /// <summary>
-        ///  Shortcut to add a RegExValition
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="thisValidation"></param>
-        /// <param name="groupName"></param>
-        /// <param name="member"></param>
-        /// <param name="pattern"></param>
-        /// <param name="formatMessage"></param>
-        /// <param name="severity"></param>
-        /// <returns>Itself</returns>
-        public static CompositeValidation<T> RegEx<T>(this CompositeValidation<T> thisValidation,
+	    public static CompositeValidation<T> MinimumSize<T, TMember>(this CompositeValidation<T> thisValidation,
+		    string groupName,
+		    Func<T, IEnumerable<TMember>> member,
+		    int minimumSize,
+		    string formatMessage = "{0} must have at least {1} items",
+		    int severity = 1)
+	    {
+		    thisValidation.Add(new EnumerableMinimumSizeValidation<TMember>(groupName, minimumSize, formatMessage, severity), member);
+		    return thisValidation;
+	    }
+
+	    public static CompositeValidation<T> MaximumSize<T, TMember>(this CompositeValidation<T> thisValidation,
+		    string groupName,
+		    Func<T, IEnumerable<TMember>> member,
+		    int maximumSize,
+		    string formatMessage = "{0} must have at least {1} items",
+		    int severity = 1)
+	    {
+		    thisValidation.Add(new EnumerableMaximumSizeValidation<TMember>(groupName, maximumSize, formatMessage, severity), member);
+		    return thisValidation;
+	    }
+
+		/// <summary>
+		///  Shortcut to add a RegExValition
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="thisValidation"></param>
+		/// <param name="groupName"></param>
+		/// <param name="member"></param>
+		/// <param name="pattern"></param>
+		/// <param name="formatMessage"></param>
+		/// <param name="severity"></param>
+		/// <returns>Itself</returns>
+		public static CompositeValidation<T> RegEx<T>(this CompositeValidation<T> thisValidation,
             string groupName,
             Func<T, string> member,
             string pattern,

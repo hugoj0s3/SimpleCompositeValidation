@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SimpleCompositeValidation.Base;
 
-namespace SimpleCompositeValidation.Validations
+namespace SimpleCompositeValidation.Validations.String
 {
     /// <summary>
     ///  Validates a string requiring a minimum length.

@@ -1,6 +1,4 @@
-﻿using SimpleCompositeValidation.Base;
-
-namespace SimpleCompositeValidation.Validations
+﻿namespace SimpleCompositeValidation.Validations.String
 {
 	/// <summary>
 	/// Validates an email.

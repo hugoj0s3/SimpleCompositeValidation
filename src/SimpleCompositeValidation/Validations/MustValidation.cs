@@ -10,7 +10,7 @@ namespace SimpleCompositeValidation.Validations
 	/// <typeparam name="T">Type of the Target that will be validated</typeparam>
 	public class MustValidation<T> : Validation<T>  
     {
-        public Func<T, bool> Rule { get; }
+        public Func<T, bool> Rule { get; protected set; }
 
 		/// <summary>
 		/// Creates a validation with given parameters.
