@@ -34,6 +34,9 @@ namespace SimpleCompositeValidation.Validations
 	    public bool IsValid => !Failures.Any();
 
 	    /// <inheritdoc />
+		public DateTime LastUpdate { get; private set; }
+
+	    /// <inheritdoc />
 	    public object Target { get; private set; }
 
 
@@ -60,12 +63,14 @@ namespace SimpleCompositeValidation.Validations
             AcceptNull = acceptNull;
             Severity = severity;
             Failures = new List<Failure>().AsReadOnly();
+			LastUpdate = DateTime.MinValue;
         }
         
         public IValidation<object> Update()
         {
             var failures = Validate();
             Failures = new ReadOnlyCollection<Failure>(failures);
+			LastUpdate = DateTime.Now;
             return this;
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using Shouldly;
 using SimpleCompositeValidation.Exceptions;
 using SimpleCompositeValidation.Extensions;
+using SimpleCompositeValidation.UnitTests.Extensions;
 using SimpleCompositeValidation.Validations;
 using SimpleCompositeValidation.Validations.String;
 using Xunit;
@@ -60,7 +61,13 @@ namespace SimpleCompositeValidation.UnitTests
 
             _personValidation.Failures.Single(x => x.GroupName == nameof(Person.BirthDate))
                 .Validation.ShouldBeOfType<MustNotValidation<DateTime>>();
-        }
+
+			_personValidation.LastUpdate.ShouldBeCloseTo(DateTime.Now, 100);
+	        foreach (var item in _personValidation.Validations)
+	        {
+		        item.LastUpdate.ShouldBeCloseTo(DateTime.Now, 100);
+	        }
+		}
 
         [Fact]
         public void Update2_AddingAllValidation_ItRaisesFailuresCorrectly()
@@ -93,7 +100,13 @@ namespace SimpleCompositeValidation.UnitTests
 
             _personValidation.Failures.Single(x => x.GroupName == nameof(Person.BirthDate))
                 .Validation.ShouldBeOfType<MustValidation<DateTime>>();
-        }
+
+	        _personValidation.LastUpdate.ShouldBeCloseTo(DateTime.Now, 100);
+	        foreach (var item in _personValidation.Validations)
+	        {
+		        item.LastUpdate.ShouldBeCloseTo(DateTime.Now, 100);
+	        }
+		}
 
         [Fact]
         public void Update3_AddingAllValidation_ItRaisesFailuresCorrectly()
@@ -121,7 +134,12 @@ namespace SimpleCompositeValidation.UnitTests
             _personValidation.Failures.Single(x => x.GroupName == nameof(Person.LastName))
                 .Validation.ShouldBeOfType<NullValidation>();
 
-        }
+	        _personValidation.LastUpdate.ShouldBeCloseTo(DateTime.Now, 100);
+	        foreach (var item in _personValidation.Validations)
+	        {
+		        item.LastUpdate.ShouldBeCloseTo(DateTime.Now, 100);
+	        }
+		}
 
 	    [Fact]
 	    public void UpdatePartially_UpdatingPartiallyAGroupName_ItRaisesFailuresCorrectly()

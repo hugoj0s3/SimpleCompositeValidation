@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using SimpleCompositeValidation.Base;
 
 namespace SimpleCompositeValidation.Base
 {
 	/// <summary>
 	/// Base interface for validation
 	/// </summary>
-    public interface IValidation
-    {
+	public interface IValidation
+	{
 		/// <summary>
 		/// Severity in case of failure
 		/// </summary>
@@ -25,14 +27,20 @@ namespace SimpleCompositeValidation.Base
 		/// <summary>
 		/// List of failures
 		/// </summary>
-        IReadOnlyCollection<Failure> Failures { get; }
+		IReadOnlyCollection<Failure> Failures { get; }
 
-	    /// <summary>
-	    /// True if the target is valid
-	    /// False if there are any failures.
-	    /// </summary>
+		/// <summary>
+		/// True if the target is valid
+		/// False if there are any failures.
+		/// </summary>
 		bool IsValid { get; }
-    }
+
+		/// <summary>
+		/// Last update performed. Typically It is initialized with DateTime.MinValue
+		/// </summary>
+		DateTime LastUpdate { get; }
+
+	}
 
 	/// <summary>
 	/// Base interface for typed validation
