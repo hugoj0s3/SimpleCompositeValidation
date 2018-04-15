@@ -29,25 +29,26 @@ Note that NotNull, MinimumLength, MaximumLength, Email, RegEx, MustNot, Must are
 ```csharp
 public class CustomValidation : Validation<Person>
 {
-    public CustomValidation(string groupName, string formatMessage, Person target, int severity = 1) 
-	    : base(groupName, formatMessage, target, severity)
-    {
-    }
-
-    public CustomValidation(string groupName, string formatMessage, int severity = 1) 
-	    : base(groupName, formatMessage, severity)
-    {
-    }
-
-    protected override IList<Failure> Validate()
-    {
-	var failures = new List<Failure>();
-	if (Target.HasDriverLicense && Target.Age < 16)
+	private const string CustomValidationMessage = "{0} - Person under 16 can not have drive license";
+	public CustomValidation(string groupName, Person target, int severity = 1)
+		: base(groupName, CustomValidationMessage, target, severity)
 	{
-	  failures.Add(new Failure(this));
 	}
 
-	return failures;
-    }
+	public CustomValidation(string groupName, int severity = 1)
+		: base(groupName, CustomValidationMessage, severity)
+	{
+	}
+
+	protected override IList<Failure> Validate()
+	{
+		var failures = new List<Failure>();
+		if (Target.HasDriverLicense && Target.Age < 16)
+		{
+			failures.Add(new Failure(this));
+		}
+
+		return failures;
+	}
 }
 ```
