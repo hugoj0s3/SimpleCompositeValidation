@@ -7,6 +7,7 @@ using SimpleCompositeValidation.Exceptions;
 
 namespace SimpleCompositeValidation
 {
+    /// <typeparam name="T">Type of the Target that will be validated</typeparam>
     /// <summary>
     /// Composite Validation class. Updates the validations added, keeping a list of failures from those validations.
     /// </summary>
