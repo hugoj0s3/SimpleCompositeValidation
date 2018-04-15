@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using SimpleCompositeValidation.Base;
 
-namespace SimpleCompositeValidation.Validations
+namespace SimpleCompositeValidation.Validations.String
 {
 	/// <summary>
 	/// Validation according with regular expression

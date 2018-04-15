@@ -7,6 +7,8 @@ using Shouldly;
 using SimpleCompositeValidation.Base;
 using SimpleCompositeValidation.Extensions;
 using SimpleCompositeValidation.Validations;
+using SimpleCompositeValidation.Validations.Collections;
+using SimpleCompositeValidation.Validations.String;
 using Xunit;
 
 namespace SimpleCompositeValidation.UnitTests
@@ -103,31 +105,6 @@ namespace SimpleCompositeValidation.UnitTests
 
             // Assert
             lastNameMock.Verify(x => x.Update(lastName), Times.Once);
-        }
-
-        [Fact]
-        public void Update_ForcingFailedValidation_ItStopsOnThisValidation()
-        {
-            // Arrange
-            var person = Fixture.Create<Person>();
-            var validation = new CompositeValidation<Person>();
-            var stopValidation = new MustNotValidation<object>("stops", x => true);
-            validation.Add(stopValidation, x => x, true);
-            var allValidation = MockAllValidations(validation);
-            var firstNameMock = allValidation.FirstNameMock;
-            var lastNameMock = allValidation.LastNameMock;
-            var hasDriverLicenseMock = allValidation.HasDriverLicenseMock;
-            var ageValidationMock = allValidation.AgeValidationMock;
-
-            // Act
-            validation.Update(person);
-
-            // Assert
-			validation.IsValid.ShouldBeFalse();
-            firstNameMock.Verify(x => x.Update(person.FirstName), Times.Never);
-            lastNameMock.Verify(x => x.Update(person.LastName), Times.Never);
-            hasDriverLicenseMock.Verify(x => x.Update(person.HasDriverLicense), Times.Never);
-            ageValidationMock.Verify(x => x.Update(person.Age), Times.Never);
         }
 
 	    [Fact]

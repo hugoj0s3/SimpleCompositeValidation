@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -30,7 +31,10 @@ namespace SimpleCompositeValidation.Base
 	    /// <inheritdoc />
 	    public bool IsValid => !Failures.Any();
 
-		/// <summary>
+	    /// <inheritdoc />
+		public DateTime LastUpdate { get; protected set; }
+
+	    /// <summary>
 		/// Creates a validation with given parameters.
 		/// </summary>
 		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
@@ -47,13 +51,14 @@ namespace SimpleCompositeValidation.Base
 	        FormatMessage = formatMessage;
             Severity = severity;
             Failures = new List<Failure>().AsReadOnly();
+			LastUpdate = DateTime.MinValue;
         }
 
 		/// <summary>
 		/// Creates a validation with given parameters. The target be initialized with the default value(default(T)).
 		/// </summary>
 		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-		/// <param name="formatMessageult formatMessage to be applied in the failures</param>
+		/// <param name="formatMessage">format of message to be applied in the failures. Where "{0}" is the groupName</param>
 		/// <param name="severity">Severity in case of failure</param>
 		protected Validation(
             string groupName, string formatMessage, int severity = 1)
@@ -73,12 +78,14 @@ namespace SimpleCompositeValidation.Base
         {
             if (Target == null)
             {
-                return this;
+	            LastUpdate = DateTime.Now;
+				return this;
             }
 
             var failures = Validate();
             Failures = new ReadOnlyCollection<Failure>(failures);
-            return this;
+	        LastUpdate = DateTime.Now;
+			return this;
         }
 
 	    /// <inheritdoc />

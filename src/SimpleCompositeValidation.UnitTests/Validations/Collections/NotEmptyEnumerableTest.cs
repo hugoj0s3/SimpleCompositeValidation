@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Shouldly;
-using SimpleCompositeValidation.Validations;
+using SimpleCompositeValidation.Validations.Collections;
 using Xunit;
 
-namespace SimpleCompositeValidation.UnitTests.Validations
+namespace SimpleCompositeValidation.UnitTests.Validations.Collections
 {
     public class NotEmptyEnumerableTest
     {
