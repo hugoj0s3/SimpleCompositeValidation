@@ -1,7 +1,7 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/a2js0psc0gnviccx?svg=true)](https://ci.appveyor.com/project/hugoj0s3/simplecompositevalidation)
-
 # Simple Composite Validation 
 Lite and simple validation library based on composition. It aims to simplify the composition and reuse of validations logics. You create single and simple validations, and then you add those validations to validate an entire model.
+
+[![Build status](https://ci.appveyor.com/api/projects/status/a2js0psc0gnviccx?svg=true)](https://ci.appveyor.com/project/hugoj0s3/simplecompositevalidation)
 
 ##  Compositing validation:
 ```csharp
