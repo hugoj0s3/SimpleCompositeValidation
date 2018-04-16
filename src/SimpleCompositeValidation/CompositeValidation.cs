@@ -16,15 +16,27 @@ namespace SimpleCompositeValidation
 	{
         private readonly IList<FuncValidation> _validations = new List<FuncValidation>();
 
+
+		public CompositeValidation(string groupName, T target, string summaryMessage)
+			: base(groupName, summaryMessage, target)
+		{
+			SummaryMessage = summaryMessage;
+		}
+
+		public CompositeValidation(string groupName, T target)
+			: this(groupName, target, string.Empty)
+		{
+		}
+
+
 		/// <summary>
 		/// Creates composite validation with a summary formatMessage that will be inserted in the top of failures list.
 		/// </summary>
 		/// <param name="target">Target to be validated</param>
 		/// <param name="summaryMessage">Message that will be inserted as the first item in case of failure</param>
 		public CompositeValidation(T target, string summaryMessage)
-            : base(typeof(T).Name, string.Empty, target)
+            : this(typeof(T).Name, target, summaryMessage)
 		{
-			SummaryMessage = summaryMessage;
 		}
 
 		/// <summary>
