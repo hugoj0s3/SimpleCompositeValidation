@@ -38,7 +38,7 @@ namespace SimpleCompositeValidation.Base
 	    /// Creates a validation with given parameters.
 	    /// </summary>
 	    /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-	    /// <param name="formatMessage">format of message to be applied in the failures "{0} is the groupName"</param>
+	    /// <param name="formatMessage">format of message to be applied in the failures. where {0} will be the groupname</param>
 	    /// <param name="target">Target to be validated</param>
 	    /// <param name="severity">Severity in case of failure</param>
 	    protected Validation(

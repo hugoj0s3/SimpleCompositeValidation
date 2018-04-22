@@ -5,7 +5,7 @@ using SimpleCompositeValidation.Base;
 namespace SimpleCompositeValidation.Validations
 {
 	/// <summary>
-	/// Validates a condition that must be true to keep validation valid.
+	/// Validates a condition that must be true to keep the validation valid.
 	/// </summary>
 	/// <typeparam name="T">Type of the Target that will be validated</typeparam>
 	public class MustValidation<T> : Validation<T>  

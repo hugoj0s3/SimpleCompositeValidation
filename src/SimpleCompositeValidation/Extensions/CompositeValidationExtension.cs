@@ -139,7 +139,19 @@ namespace SimpleCompositeValidation.Extensions
             return thisValidation;
         }
 
-	    public static ICompositeValidation<T> MinimumSize<T, TMember>(this ICompositeValidation<T> thisValidation,
+		/// <summary>
+		/// Shortcut to add EnumerableMinimumSizeValidation
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="TMember"></typeparam>
+		/// <param name="thisValidation"></param>
+		/// <param name="groupName"></param>
+		/// <param name="member"></param>
+		/// <param name="minimumSize"></param>
+		/// <param name="formatMessage"></param>
+		/// <param name="severity"></param>
+		/// <returns></returns>
+		public static ICompositeValidation<T> MinimumSize<T, TMember>(this ICompositeValidation<T> thisValidation,
 		    string groupName,
 		    Func<T, IEnumerable<TMember>> member,
 		    int minimumSize,
@@ -150,7 +162,19 @@ namespace SimpleCompositeValidation.Extensions
 		    return thisValidation;
 	    }
 
-	    public static ICompositeValidation<T> MaximumSize<T, TMember>(this ICompositeValidation<T> thisValidation,
+		/// <summary>
+		/// Shortcut to add EnumerableMaximumSizeValidation
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="TMember"></typeparam>
+		/// <param name="thisValidation"></param>
+		/// <param name="groupName"></param>
+		/// <param name="member"></param>
+		/// <param name="maximumSize"></param>
+		/// <param name="formatMessage"></param>
+		/// <param name="severity"></param>
+		/// <returns></returns>
+		public static ICompositeValidation<T> MaximumSize<T, TMember>(this ICompositeValidation<T> thisValidation,
 		    string groupName,
 		    Func<T, IEnumerable<TMember>> member,
 		    int maximumSize,
@@ -203,6 +227,16 @@ namespace SimpleCompositeValidation.Extensions
             return thisValidation;
         }
 
+		/// <summary>
+		/// Shortcut to add a NotEmptyStringValidation
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="thisValidation"></param>
+		/// <param name="groupName"></param>
+		/// <param name="member"></param>
+		/// <param name="formatMessage"></param>
+		/// <param name="severity"></param>
+		/// <returns></returns>
 		public static ICompositeValidation<T> NotEmpty<T>(this ICompositeValidation<T> thisValidation,
 			string groupName,
 			Func<T, string> member,
@@ -213,7 +247,18 @@ namespace SimpleCompositeValidation.Extensions
 			return thisValidation;
 		}
 
-	    public static ICompositeValidation<T> NotEmpty<T, TMember>(this ICompositeValidation<T> thisValidation,
+		/// <summary>
+		/// Short to add a NotEmptyEnumerableValidation
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="TMember"></typeparam>
+		/// <param name="thisValidation"></param>
+		/// <param name="groupName"></param>
+		/// <param name="member"></param>
+		/// <param name="formatMessage"></param>
+		/// <param name="severity"></param>
+		/// <returns></returns>
+		public static ICompositeValidation<T> NotEmpty<T, TMember>(this ICompositeValidation<T> thisValidation,
 		    string groupName,
 		    Func<T, IEnumerable<TMember>> member,
 		    string formatMessage = "{0} can not be empty",

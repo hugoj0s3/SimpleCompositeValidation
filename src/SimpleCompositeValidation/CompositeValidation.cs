@@ -7,12 +7,8 @@ using SimpleCompositeValidation.Exceptions;
 
 namespace SimpleCompositeValidation
 {
-    /// <typeparam name="T">Type of the Target that will be validated</typeparam>
-    /// <summary>
-    /// Composite Validation class. Updates the validations added, keeping a list of failures from those validations.
-    /// </summary>
-    /// <typeparam name="T">Type of the Target that will be validated</typeparam>
-    public class CompositeValidation<T> : Validation<T>, ICompositeValidation<T>
+	/// <inheritdoc cref="ICompositeValidation{T}" />
+	public class CompositeValidation<T> : Validation<T>, ICompositeValidation<T>
 	{
         private readonly IList<FuncValidation> _validations = new List<FuncValidation>();
 
@@ -26,14 +22,8 @@ namespace SimpleCompositeValidation
 			SummaryMessage = summaryMessage;
 		}
 
-        /// <summary>
-        /// Add a validation in the composition
-        /// </summary>
-        /// <typeparam name="TMember">type of the members</typeparam>
-        /// <param name="validation">validation to validate this members</param>
-        /// <param name="member">Path to obtain the members</param>
-        /// <returns></returns>
-        public ICompositeValidation<T> Add<TMember>(
+		/// <inheritdoc />
+		public ICompositeValidation<T> Add<TMember>(
             IValidation<TMember> validation, 
             Func<T, TMember> member)
         {
@@ -53,14 +43,8 @@ namespace SimpleCompositeValidation
             return this;
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <typeparam name="TMember"></typeparam>
-		/// <param name="validation"></param>
-		/// <param name="members"></param>
-		/// <returns></returns>
-	    public ICompositeValidation<T> AddForEach<TMember>(
+		/// <inheritdoc />
+		public ICompositeValidation<T> AddForEach<TMember>(
 		    IValidation<TMember> validation,
 		    Func<T, IEnumerable<TMember>> members)
 	    {
@@ -83,13 +67,7 @@ namespace SimpleCompositeValidation
 		    return this;
 	    }
 
-	    /// <summary>
-		/// Update partially according with group name passed.
-		/// </summary>
-		/// <typeparam name="TMember">Type of the members</typeparam>
-		/// <param name="groupName">Group name</param>
-		/// <param name="value">value to be validated</param>
-		/// <returns>Itself</returns>
+		/// <inheritdoc />
 		public ICompositeValidation<T> Update<TMember>(string groupName, TMember value)
         {
 
@@ -98,11 +76,7 @@ namespace SimpleCompositeValidation
 	        return UpdateList(groupName, newFailures);
 		}
 
-		/// <summary>
-		/// Update partially according with group name passed.
-		/// </summary>
-		/// <param name="groupName">Group name</param>
-		/// <returns>Itself</returns>
+		/// <inheritdoc />
 		public ICompositeValidation<T> Update(string groupName)
 		{
 
@@ -111,39 +85,31 @@ namespace SimpleCompositeValidation
 			return UpdateList(groupName, newFailures);
 		}
 
-		/// <summary>
-		/// Update partially according with group name and target passed.
-		/// </summary>
-		/// <param name="target">Target to be validated</param>
-		/// <param name="groupName">Group name</param>
-		/// <returns>Itself</returns>
+		/// <inheritdoc />
 		public ICompositeValidation<T> Update(T target, string groupName)
 	    {
 		    Target = target;
 		    return Update(groupName);
 	    }
 
-		/// <summary>
-		/// Validations added
-		/// </summary>
+		/// <inheritdoc />
 		public IReadOnlyCollection<IValidation> Validations => 
 			_validations
 				.Select(x => x.Validation)
 				.ToList()
 				.AsReadOnly();
 
-        public bool HasSummaryMessage => !string.IsNullOrEmpty(SummaryMessage);
+		/// <inheritdoc />
+		public bool HasSummaryMessage => !string.IsNullOrEmpty(SummaryMessage);
 
-        public string SummaryMessage { get; protected set; }
+		/// <inheritdoc />
+		public string SummaryMessage { get; protected set; }
 
-	    public override string Message => SummaryMessage;
+		/// <inheritdoc />
+		public override string Message => SummaryMessage;
 
-	    /// <summary>
-        /// Validates the target and return the list of failures
-        /// It inserts a failure in the top of the list if there is a failure in any of validations added and the summary formatMessage was set in the constructor
-        /// </summary>
-        /// <returns>a list of failures, it might be empty if there are no fails</returns>
-        protected override IList<Failure> Validate()
+		/// <inheritdoc />
+		protected override IList<Failure> Validate()
         {
 
             var failures = Update(_validations);
