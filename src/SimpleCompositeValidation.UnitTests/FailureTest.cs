@@ -13,7 +13,7 @@ namespace SimpleCompositeValidation.UnitTests
         {
             // Arrange
             string customMessage = "CustomMessage";
-            var validation = new Mock<Validation<object>>("groupName", default(object)).Object;
+            var validation = new Mock<Validation<object>>("groupName", default(object), "AnyMessage", 99).Object;
 
             // Act
             var failure = new Failure(validation, customMessage);
