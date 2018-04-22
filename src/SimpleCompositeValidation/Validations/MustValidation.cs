@@ -16,34 +16,6 @@ namespace SimpleCompositeValidation.Validations
 		/// Creates a validation with given parameters.
 		/// </summary>
 		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-		/// <param name="rule">Condition</param>
-		public MustValidation(
-		    string groupName,
-		    Func<T, bool> rule)
-		    : this(groupName, rule, default(T))
-	    {
-
-	    }
-
-		/// <summary>
-		/// Creates a validation with given parameters.
-		/// </summary>
-		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-		/// <param name="target">Target to be validated</param>
-		/// <param name="rule">Condition</param>
-		public MustValidation(
-            string groupName,
-            Func<T, bool> rule,
-            T target)
-            : this(groupName, rule, "{0} is not valid", 1, target)
-        {
-           
-        }
-
-		/// <summary>
-		/// Creates a validation with given parameters.
-		/// </summary>
-		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
 		/// <param name="formatMessage">format of message to be applied in the failures "{0} is the groupName"</param>
 		/// <param name="target">Target to be validated</param>
 		/// <param name="rule">Condition</param>
@@ -51,10 +23,10 @@ namespace SimpleCompositeValidation.Validations
 		public MustValidation(
             string groupName,
             Func<T, bool> rule, 
-            string formatMessage = "{0} is not valid", 
-            int severity = 1,
-	        T target = default(T)) 
-            : base(groupName, formatMessage, target, severity)
+	        T target = default(T),
+			string formatMessage = "{0} is not valid",
+			int severity = 1) 
+            : base(groupName, target, formatMessage,  severity)
         {
             Rule = rule;
         }

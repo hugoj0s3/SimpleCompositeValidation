@@ -14,27 +14,13 @@ namespace SimpleCompositeValidation.Validations.String
         public int MinimumLength { get; }
 
         public StringMinimumLengthValidation(
-            string groupName,
-            int minimumLength)
-            : this(groupName, minimumLength, "{0} requires at least {1} characters")
-        {
-        }
-
-        public StringMinimumLengthValidation(
-            string groupName,
-            int minimumLength,
-            string target)
-            : this(groupName, minimumLength, "{0} requires at least {1} characters", 1,target)
-        {
-        }
-
-        public StringMinimumLengthValidation(
             string groupName, 
-            int minimumLength, 
-            string formatMessage = "{0} requires at least {1} characters", 
-            int severity = 1,
-            string target = null) 
-            : base(groupName, formatMessage, target, severity)
+            int minimumLength,
+	        string target = default(string),
+			string formatMessage = "{0} requires at least {1} characters", 
+            int severity = 1
+             )
+            : base(groupName, target, formatMessage,  severity)
         {
             MinimumLength = minimumLength;   
         }

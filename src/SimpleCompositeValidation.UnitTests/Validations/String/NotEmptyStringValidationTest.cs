@@ -14,7 +14,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations.String
 		    const string message = "It must not be empty";
 		    const int severtiy = 5;
 		    const string groupName = "InvalidOperation";
-		    var validation = new NotEmptyStringValidation(groupName, message, severtiy, string.Empty);
+		    var validation = new NotEmptyStringValidation(groupName, string.Empty, message, severtiy);
 
 		    // Act
 		    var result = validation.Update();

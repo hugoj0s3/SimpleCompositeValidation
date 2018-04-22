@@ -13,20 +13,10 @@ namespace SimpleCompositeValidation.Validations.Collections
 		public EnumerableMaximumSizeValidation(
 			string groupName, 
 			int maximumSize,
-			IEnumerable<T> target,
+			IEnumerable<T> target = default(IEnumerable<T>),
 			string formatMessage = "{0} can not have more than {1} items",
 			int severity = 1) 
-			: base(groupName, formatMessage, target, severity)
-		{
-			MaximumSize = maximumSize;
-		}
-
-		public EnumerableMaximumSizeValidation(
-			string groupName, 
-			int maximumSize,
-			string formatMessage = "{0} can not have more than {1} items",
-			int severity = 1) 
-			: base(groupName, formatMessage, severity)
+			: base(groupName, target, formatMessage, severity)
 		{
 			MaximumSize = maximumSize;
 		}

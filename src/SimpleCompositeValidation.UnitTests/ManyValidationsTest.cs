@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Shouldly;
+using SimpleCompositeValidation.Base;
 using SimpleCompositeValidation.Exceptions;
 using SimpleCompositeValidation.Extensions;
 using SimpleCompositeValidation.UnitTests.Extensions;
@@ -13,7 +14,7 @@ namespace SimpleCompositeValidation.UnitTests
 {
     public class ManyValidationsTest
     {
-        private readonly CompositeValidation<Person> _personValidation = new CompositeValidation<Person>()
+        private readonly ICompositeValidation<Person> _personValidation = new CompositeValidation<Person>()
             .NotNull(nameof(Person.FirstName), x => x.FirstName)
             .MinimumLength(nameof(Person.FirstName), x => x.FirstName, 3)
             .MaximumLength(nameof(Person.FirstName), x => x.FirstName, 10)
@@ -203,7 +204,7 @@ namespace SimpleCompositeValidation.UnitTests
 	    {
 			//Arrange
 		    var summaryMessage = "#TestSummaryMessage";
-		    var validations = new CompositeValidation<Person>(summaryMessage)
+		    var validations = new CompositeValidation<Person>(null, null, summaryMessage)
 			    .NotNull(nameof(Person.FirstName), x => x.FirstName)
 			    .MinimumLength(nameof(Person.FirstName), x => x.FirstName, 3)
 			    .MaximumLength(nameof(Person.FirstName), x => x.FirstName, 10)
@@ -266,7 +267,7 @@ namespace SimpleCompositeValidation.UnitTests
 	    {
 		    // Arrange
 			string summaryMessage = "#TestError";
-		    var personValidation = new CompositeValidation<Person>(summaryMessage)
+		    var personValidation = new CompositeValidation<Person>(null, null, summaryMessage)
 			    .NotNull(nameof(Person.FirstName), x => x.FirstName)
 			    .MinimumLength(nameof(Person.FirstName), x => x.FirstName, 3)
 			    .MaximumLength(nameof(Person.FirstName), x => x.FirstName, 10)

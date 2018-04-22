@@ -15,7 +15,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations.Collections
 		    const string message = "It must not be empty";
 		    const int severtiy = 5;
 		    const string groupName = "InvalidOperation";
-		    var validation = new NotEmptyEnumerableValidation<object>(groupName, message, severtiy, new List<object>());
+		    var validation = new NotEmptyEnumerableValidation<object>(groupName, new List<object>(), message, severtiy);
 
 		    // Act
 		    var result = validation.Update();

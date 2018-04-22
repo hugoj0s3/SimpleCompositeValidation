@@ -35,39 +35,27 @@ namespace SimpleCompositeValidation.Base
 		public DateTime LastUpdate { get; protected set; }
 
 	    /// <summary>
-		/// Creates a validation with given parameters.
-		/// </summary>
-		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-		/// <param name="formatMessage">format of message to be applied in the failures "{0} is the groupName"</param>
-		/// <param name="target">Target to be validated</param>
-		/// <param name="severity">Severity in case of failure</param>
-		protected Validation(
-            string groupName,
-            string formatMessage,
-            T target,  int severity = 1)
-        {
-            GroupName = groupName;
-            Target = target;
-	        FormatMessage = formatMessage;
-            Severity = severity;
-            Failures = new List<Failure>().AsReadOnly();
-			LastUpdate = DateTime.MinValue;
-        }
+	    /// Creates a validation with given parameters.
+	    /// </summary>
+	    /// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
+	    /// <param name="formatMessage">format of message to be applied in the failures "{0} is the groupName"</param>
+	    /// <param name="target">Target to be validated</param>
+	    /// <param name="severity">Severity in case of failure</param>
+	    protected Validation(
+		    string groupName,
+		    T target = default(T),
+			string formatMessage = "{0} is not valid",
+		    int severity = 1)
+	    {
+		    GroupName = groupName;
+		    Target = target;
+		    FormatMessage = formatMessage;
+		    Severity = severity;
+		    Failures = new List<Failure>().AsReadOnly();
+		    LastUpdate = DateTime.MinValue;
+	    }
 
-		/// <summary>
-		/// Creates a validation with given parameters. The target be initialized with the default value(default(T)).
-		/// </summary>
-		/// <param name="groupName">Group name to group your validations, it can be a property name for example</param>
-		/// <param name="formatMessage">format of message to be applied in the failures. Where "{0}" is the groupName</param>
-		/// <param name="severity">Severity in case of failure</param>
-		protected Validation(
-            string groupName, string formatMessage, int severity = 1)
-            : this(groupName, formatMessage, default(T), severity)
-        {
-
-        }
-
-		/// <summary>
+	    /// <summary>
 		/// Validates the target and return the list of failures
 		/// </summary>
 		/// <returns>a list of failures, it might be empty if there are no fails</returns>

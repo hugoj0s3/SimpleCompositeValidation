@@ -13,20 +13,10 @@ namespace SimpleCompositeValidation.Validations.Collections
 	    public EnumerableMinimumSizeValidation(
 		    string groupName,
 			int minimumSize,
-			IEnumerable<T> target,
+			IEnumerable<T> target = default(IEnumerable<T>),
 			string formatMessage = "{0} must have at least {1} items",
 			int severity = 1) 
-		    : base(groupName, formatMessage, target, severity)
-	    {
-		    MinimumSize = minimumSize;
-	    }
-
-	    public EnumerableMinimumSizeValidation(
-		    string groupName, 
-		    int minimumSize,
-		    string formatMessage = "{0} must have at least {1} items",
-			int severity = 1) 
-		    : base(groupName, formatMessage, severity)
+		    : base(groupName, target, formatMessage,  severity)
 	    {
 		    MinimumSize = minimumSize;
 	    }

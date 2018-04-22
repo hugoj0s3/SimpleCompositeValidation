@@ -17,54 +17,14 @@ namespace SimpleCompositeValidation
         private readonly IList<FuncValidation> _validations = new List<FuncValidation>();
 
 
-		public CompositeValidation(string groupName, T target, string summaryMessage)
-			: base(groupName, summaryMessage, target)
+		public CompositeValidation(
+			T target = default(T),
+			string groupName = null,
+			string summaryMessage = "")
+			: base(groupName ?? typeof(T).Name, target, summaryMessage)
 		{
 			SummaryMessage = summaryMessage;
 		}
-
-		public CompositeValidation(string groupName, T target)
-			: this(groupName, target, string.Empty)
-		{
-		}
-
-
-		/// <summary>
-		/// Creates composite validation with a summary formatMessage that will be inserted in the top of failures list.
-		/// </summary>
-		/// <param name="target">Target to be validated</param>
-		/// <param name="summaryMessage">Message that will be inserted as the first item in case of failure</param>
-		public CompositeValidation(T target, string summaryMessage)
-            : this(typeof(T).Name, target, summaryMessage)
-		{
-		}
-
-		/// <summary>
-		/// Creates composite validation without a summary formatMessage, choosing this constructor no formatMessage will be inserted in the top of failures list.
-		/// </summary>
-		/// <param name="target">Target to be validated</param>
-		public CompositeValidation(T target)
-            : this(target, string.Empty)
-        {
-        }
-		/// <summary>
-		///  Creates composite validation with a summary formatMessage that will be inserted in the top of failures list. 
-		///  The target be initialized with the default value(default(T)).
-		/// </summary>
-		/// <param name="summaryMessage">FormatMessage that will be inserted as the first item in case of failure</param>
-		public CompositeValidation(string summaryMessage)
-            : this(default(T), summaryMessage)
-        {
-        }
-
-		/// <summary>
-		///  Creates composite validation without a summary formatMessage, choosing this constructor no formatMessage will be inserted in the top of failures list.
-		///  The target be initialized with the default value(default(T)).
-		/// </summary>
-		public CompositeValidation()
-            : this(default(T))
-        {
-        }
 
         /// <summary>
         /// Add a validation in the composition
@@ -73,7 +33,7 @@ namespace SimpleCompositeValidation
         /// <param name="validation">validation to validate this members</param>
         /// <param name="member">Path to obtain the members</param>
         /// <returns></returns>
-        public CompositeValidation<T> Add<TMember>(
+        public ICompositeValidation<T> Add<TMember>(
             IValidation<TMember> validation, 
             Func<T, TMember> member)
         {
@@ -100,7 +60,7 @@ namespace SimpleCompositeValidation
 		/// <param name="validation"></param>
 		/// <param name="members"></param>
 		/// <returns></returns>
-	    public CompositeValidation<T> AddForEach<TMember>(
+	    public ICompositeValidation<T> AddForEach<TMember>(
 		    IValidation<TMember> validation,
 		    Func<T, IEnumerable<TMember>> members)
 	    {
@@ -130,7 +90,7 @@ namespace SimpleCompositeValidation
 		/// <param name="groupName">Group name</param>
 		/// <param name="value">value to be validated</param>
 		/// <returns>Itself</returns>
-		public IValidation<T> Update<TMember>(string groupName, TMember value)
+		public ICompositeValidation<T> Update<TMember>(string groupName, TMember value)
         {
 
 	        var newFailures = Update(_validations.Where(x => x.Validation.GroupName == groupName), item => value);
@@ -143,7 +103,7 @@ namespace SimpleCompositeValidation
 		/// </summary>
 		/// <param name="groupName">Group name</param>
 		/// <returns>Itself</returns>
-		public IValidation<T> Update(string groupName)
+		public ICompositeValidation<T> Update(string groupName)
 		{
 
 			var newFailures = Update(_validations.Where(x => x.Validation.GroupName == groupName));
@@ -157,7 +117,7 @@ namespace SimpleCompositeValidation
 		/// <param name="target">Target to be validated</param>
 		/// <param name="groupName">Group name</param>
 		/// <returns>Itself</returns>
-		public IValidation<T> Update(T target, string groupName)
+		public ICompositeValidation<T> Update(T target, string groupName)
 	    {
 		    Target = target;
 		    return Update(groupName);
@@ -232,7 +192,7 @@ namespace SimpleCompositeValidation
 
 	        return failures;
         }
-	    private IValidation<T> UpdateList(string groupName, List<Failure> newFailures)
+	    private ICompositeValidation<T> UpdateList(string groupName, List<Failure> newFailures)
 	    {
 		    var oldFailures = Failures.Where(x => x.GroupName != groupName).ToList();
 
