@@ -10,16 +10,18 @@ namespace SimpleCompositeValidation
 	/// <inheritdoc cref="ICompositeValidation{T}" />
 	public class CompositeValidation<T> : Validation<T>, ICompositeValidation<T>
 	{
-        private readonly IList<FuncValidation> _validations = new List<FuncValidation>();
+
+		private readonly IList<FuncValidation> _validations = new List<FuncValidation>();
+		protected string FormatSummaryMessage { get; set; }
 
 
 		public CompositeValidation(
 			T target = default(T),
 			string groupName = null,
-			string summaryMessage = "")
-			: base(groupName ?? typeof(T).Name, target, summaryMessage)
+			string formatSummaryMessage = "")
+			: base(groupName ?? typeof(T).Name, target, formatSummaryMessage)
 		{
-			SummaryMessage = summaryMessage;
+			FormatSummaryMessage = formatSummaryMessage;
 		}
 
 		/// <inheritdoc />
@@ -100,10 +102,10 @@ namespace SimpleCompositeValidation
 				.AsReadOnly();
 
 		/// <inheritdoc />
-		public bool HasSummaryMessage => !string.IsNullOrEmpty(SummaryMessage);
+		public bool HasSummaryMessage => !string.IsNullOrEmpty(FormatSummaryMessage);
 
 		/// <inheritdoc />
-		public string SummaryMessage { get; protected set; }
+		public string SummaryMessage => string.Format(FormatSummaryMessage, GroupName);
 
 		/// <inheritdoc />
 		public override string Message => SummaryMessage;
