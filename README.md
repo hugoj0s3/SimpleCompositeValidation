@@ -7,15 +7,15 @@ Lite and simple validation library based on composition. It aims to simplify the
 
 ##  Compositing validation:
 ```csharp
-CompositeValidation<Person> Validation = new CompositeValidation<Person>()
-       .NotNull(nameof(Person.FirstName), x => x.FirstName) 
-       .MinimumLength(nameof(Person.FirstName), x => x.FirstName, 3) 
-       .MaximumLength(nameof(Person.FirstName), x => x.FirstName, 10) 
-       .Email(nameof(Person.Email), x => x.Email) 
-       .RegEx(nameof(Person.Phone), x => x.Phone, @"^[0-9\-\+]{9,15}$") 
-       .MustNot(nameof(Person.BirthDate), x => x.BirthDate, x => x.Year < 1850) 
-       .Must(nameof(Person.BirthDate), x => x.BirthDate, x => x < DateTime.Now) 
-       .Add(new CustomValidation(nameof(Person)), x => x);        
+ ICompositeValidation<Person> Validation = new CompositeValidation<Person>()
+    .NotNull(nameof(Person.FirstName), x => x.FirstName)
+    .MinimumLength(nameof(Person.FirstName), x => x.FirstName, 3)
+    .MaximumLength(nameof(Person.FirstName), x => x.FirstName, 10)
+    .Email(nameof(Person.Email), x => x.Email)
+    .RegEx(nameof(Person.Phone), x => x.Phone, @"^[0-9\-\+]{9,15}$")
+    .MustNot(nameof(Person.BirthDate), x => x.BirthDate, x => x.Year < 1850)
+    .Must(nameof(Person.BirthDate), x => x.BirthDate, x => x < DateTime.Now)
+    .Add(new CustomValidation(nameof(Person)), x => x);    
 ```
 
 ## Validating the model:
@@ -31,16 +31,15 @@ if (!Validation.Update(person).IsValid)
 ```csharp
 public class CustomValidation : Validation<Person>
 {
-	private const string CustomValidationMessage 
-                   = "{0} - Person under 16 can not have drive license";
+	private const string DefaultValidationMessage
+	    = "{0} - Person under 16 can not have drive license";
 
-	public CustomValidation(string groupName, Person target, int severity = 1)
-		: base(groupName, CustomValidationMessage, target, severity)
-	{
-	}
-
-	public CustomValidation(string groupName, int severity = 1)
-		: base(groupName, CustomValidationMessage, severity)
+	public CustomValidation(
+	    string groupName, 
+	    Person target = default(Person), 
+	    string formatMessage = DefaultValidationMessage, 
+	    int severity = 1) 
+	    : base(groupName, target, formatMessage, severity)
 	{
 	}
 
