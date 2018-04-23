@@ -113,7 +113,7 @@ namespace SimpleCompositeValidation.UnitTests
 		    // Arrange
 		    var person = Fixture.Create<Person>();
 		    var summaryMessage = "#TestSummaryMessage";
-		    var validation = new CompositeValidation<Person>(summaryMessage);
+		    var validation = new CompositeValidation<Person>(null, null, summaryMessage);
 		    var stopValidation = new MustNotValidation<object>("Failing", x => true);
 		    validation.Add(stopValidation, x => x);
 		   

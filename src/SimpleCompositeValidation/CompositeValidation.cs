@@ -7,73 +7,25 @@ using SimpleCompositeValidation.Exceptions;
 
 namespace SimpleCompositeValidation
 {
-    /// <typeparam name="T">Type of the Target that will be validated</typeparam>
-    /// <summary>
-    /// Composite Validation class. Updates the validations added, keeping a list of failures from those validations.
-    /// </summary>
-    /// <typeparam name="T">Type of the Target that will be validated</typeparam>
-    public class CompositeValidation<T> : Validation<T>, ICompositeValidation<T>
+	/// <inheritdoc cref="ICompositeValidation{T}" />
+	public class CompositeValidation<T> : Validation<T>, ICompositeValidation<T>
 	{
-        private readonly IList<FuncValidation> _validations = new List<FuncValidation>();
+
+		private readonly IList<FuncValidation> _validations = new List<FuncValidation>();
+		protected string FormatSummaryMessage { get; set; }
 
 
-		public CompositeValidation(string groupName, T target, string summaryMessage)
-			: base(groupName, summaryMessage, target)
+		public CompositeValidation(
+			T target = default(T),
+			string groupName = null,
+			string formatSummaryMessage = "")
+			: base(groupName ?? typeof(T).Name, target, formatSummaryMessage)
 		{
-			SummaryMessage = summaryMessage;
+			FormatSummaryMessage = formatSummaryMessage;
 		}
 
-		public CompositeValidation(string groupName, T target)
-			: this(groupName, target, string.Empty)
-		{
-		}
-
-
-		/// <summary>
-		/// Creates composite validation with a summary formatMessage that will be inserted in the top of failures list.
-		/// </summary>
-		/// <param name="target">Target to be validated</param>
-		/// <param name="summaryMessage">Message that will be inserted as the first item in case of failure</param>
-		public CompositeValidation(T target, string summaryMessage)
-            : this(typeof(T).Name, target, summaryMessage)
-		{
-		}
-
-		/// <summary>
-		/// Creates composite validation without a summary formatMessage, choosing this constructor no formatMessage will be inserted in the top of failures list.
-		/// </summary>
-		/// <param name="target">Target to be validated</param>
-		public CompositeValidation(T target)
-            : this(target, string.Empty)
-        {
-        }
-		/// <summary>
-		///  Creates composite validation with a summary formatMessage that will be inserted in the top of failures list. 
-		///  The target be initialized with the default value(default(T)).
-		/// </summary>
-		/// <param name="summaryMessage">FormatMessage that will be inserted as the first item in case of failure</param>
-		public CompositeValidation(string summaryMessage)
-            : this(default(T), summaryMessage)
-        {
-        }
-
-		/// <summary>
-		///  Creates composite validation without a summary formatMessage, choosing this constructor no formatMessage will be inserted in the top of failures list.
-		///  The target be initialized with the default value(default(T)).
-		/// </summary>
-		public CompositeValidation()
-            : this(default(T))
-        {
-        }
-
-        /// <summary>
-        /// Add a validation in the composition
-        /// </summary>
-        /// <typeparam name="TMember">type of the members</typeparam>
-        /// <param name="validation">validation to validate this members</param>
-        /// <param name="member">Path to obtain the members</param>
-        /// <returns></returns>
-        public CompositeValidation<T> Add<TMember>(
+		/// <inheritdoc />
+		public ICompositeValidation<T> Add<TMember>(
             IValidation<TMember> validation, 
             Func<T, TMember> member)
         {
@@ -93,14 +45,8 @@ namespace SimpleCompositeValidation
             return this;
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <typeparam name="TMember"></typeparam>
-		/// <param name="validation"></param>
-		/// <param name="members"></param>
-		/// <returns></returns>
-	    public CompositeValidation<T> AddForEach<TMember>(
+		/// <inheritdoc />
+		public ICompositeValidation<T> AddForEach<TMember>(
 		    IValidation<TMember> validation,
 		    Func<T, IEnumerable<TMember>> members)
 	    {
@@ -123,14 +69,8 @@ namespace SimpleCompositeValidation
 		    return this;
 	    }
 
-	    /// <summary>
-		/// Update partially according with group name passed.
-		/// </summary>
-		/// <typeparam name="TMember">Type of the members</typeparam>
-		/// <param name="groupName">Group name</param>
-		/// <param name="value">value to be validated</param>
-		/// <returns>Itself</returns>
-		public IValidation<T> Update<TMember>(string groupName, TMember value)
+		/// <inheritdoc />
+		public ICompositeValidation<T> Update<TMember>(string groupName, TMember value)
         {
 
 	        var newFailures = Update(_validations.Where(x => x.Validation.GroupName == groupName), item => value);
@@ -138,12 +78,8 @@ namespace SimpleCompositeValidation
 	        return UpdateList(groupName, newFailures);
 		}
 
-		/// <summary>
-		/// Update partially according with group name passed.
-		/// </summary>
-		/// <param name="groupName">Group name</param>
-		/// <returns>Itself</returns>
-		public IValidation<T> Update(string groupName)
+		/// <inheritdoc />
+		public ICompositeValidation<T> Update(string groupName)
 		{
 
 			var newFailures = Update(_validations.Where(x => x.Validation.GroupName == groupName));
@@ -151,39 +87,31 @@ namespace SimpleCompositeValidation
 			return UpdateList(groupName, newFailures);
 		}
 
-		/// <summary>
-		/// Update partially according with group name and target passed.
-		/// </summary>
-		/// <param name="target">Target to be validated</param>
-		/// <param name="groupName">Group name</param>
-		/// <returns>Itself</returns>
-		public IValidation<T> Update(T target, string groupName)
+		/// <inheritdoc />
+		public ICompositeValidation<T> Update(T target, string groupName)
 	    {
 		    Target = target;
 		    return Update(groupName);
 	    }
 
-		/// <summary>
-		/// Validations added
-		/// </summary>
+		/// <inheritdoc />
 		public IReadOnlyCollection<IValidation> Validations => 
 			_validations
 				.Select(x => x.Validation)
 				.ToList()
 				.AsReadOnly();
 
-        public bool HasSummaryMessage => !string.IsNullOrEmpty(SummaryMessage);
+		/// <inheritdoc />
+		public bool HasSummaryMessage => !string.IsNullOrEmpty(FormatSummaryMessage);
 
-        public string SummaryMessage { get; protected set; }
+		/// <inheritdoc />
+		public string SummaryMessage => string.Format(FormatSummaryMessage, GroupName);
 
-	    public override string Message => SummaryMessage;
+		/// <inheritdoc />
+		public override string Message => SummaryMessage;
 
-	    /// <summary>
-        /// Validates the target and return the list of failures
-        /// It inserts a failure in the top of the list if there is a failure in any of validations added and the summary formatMessage was set in the constructor
-        /// </summary>
-        /// <returns>a list of failures, it might be empty if there are no fails</returns>
-        protected override IList<Failure> Validate()
+		/// <inheritdoc />
+		protected override IList<Failure> Validate()
         {
 
             var failures = Update(_validations);
@@ -232,7 +160,7 @@ namespace SimpleCompositeValidation
 
 	        return failures;
         }
-	    private IValidation<T> UpdateList(string groupName, List<Failure> newFailures)
+	    private ICompositeValidation<T> UpdateList(string groupName, List<Failure> newFailures)
 	    {
 		    var oldFailures = Failures.Where(x => x.GroupName != groupName).ToList();
 

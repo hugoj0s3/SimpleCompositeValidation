@@ -14,27 +14,13 @@ namespace SimpleCompositeValidation.Validations.String
         public int MaximumLength { get; }
 
         public StringMaximumLengthValidation(
-            string groupName,
-            int maximumLength)
-            : this(groupName, maximumLength, "{0} the characters length limit is {1}")
-        {
-        }
-
-        public StringMaximumLengthValidation(
-            string groupName,
-            int maximumLength,
-            string target)
-            : this(groupName, maximumLength, "{0} the characters length limit is {1}", 1, target)
-        { 
-        }
-
-        public StringMaximumLengthValidation(
             string groupName, 
-            int maximumLength, 
-            string formatMessage = "{0} the characters length limit is {1}", 
-            int severity = 1,
-            string target = null) 
-            : base(groupName, formatMessage, target, severity)
+            int maximumLength,
+            string target = default(string),
+			string formatMessage = "{0} the characters length limit is {1}", 
+            int severity = 1
+            ) 
+            : base(groupName, target, formatMessage, severity)
         {
             MaximumLength = maximumLength;
         }

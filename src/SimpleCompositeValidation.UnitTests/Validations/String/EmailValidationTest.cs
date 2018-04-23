@@ -17,7 +17,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations.String
             var severity = 999;
 
             var validation =
-                new EmailValidation(groupName, message, severity, target);
+                new EmailValidation(groupName, target, message, severity);
 
             // Act
             var result = validation.Update();

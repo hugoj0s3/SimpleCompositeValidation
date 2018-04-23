@@ -50,11 +50,11 @@ namespace SimpleCompositeValidation.Validations
 		/// <param name="severity">Severity in case of failure</param>
 		public NullValidation(
             string groupName,
-            string formatMessage = "{0} must not be null",
-            bool acceptNull = false,
+            object target = null,
+			string formatMessage = "{0} must not be null",
 			int severity = 1,
-            object target = null
-            ) 
+            bool acceptNull = false
+			) 
         {
 	        _formatMessage = formatMessage;
 	      

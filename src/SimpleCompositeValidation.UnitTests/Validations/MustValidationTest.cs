@@ -14,7 +14,7 @@ namespace SimpleCompositeValidation.UnitTests.Validations
             const string message = "It must be true";
             const int severtiy = 5;
             const string groupName = "InvalidOperation";
-            var mustValidation = new MustValidation<bool>(groupName, x => x, message, severtiy, false);
+            var mustValidation = new MustValidation<bool>(groupName, x => x, false, message, severtiy);
 
             // Act
             var result = mustValidation.Update();
