@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Shouldly;
 using SimpleCompositeValidation.Base;
 using SimpleCompositeValidation.Exceptions;
@@ -14,6 +15,10 @@ namespace SimpleCompositeValidation.UnitTests
 {
     public class ManyValidationsTest
     {
+
+
+        private const int MillisecondsTimeout = 500;
+
         private readonly ICompositeValidation<Person> _personValidation = new CompositeValidation<Person>()
             .NotNull(nameof(Person.FirstName), x => x.FirstName)
             .MinimumLength(nameof(Person.FirstName), x => x.FirstName, 3)
@@ -63,10 +68,10 @@ namespace SimpleCompositeValidation.UnitTests
             _personValidation.Failures.Single(x => x.GroupName == nameof(Person.BirthDate))
                 .Validation.ShouldBeOfType<MustNotValidation<DateTime>>();
 
-			_personValidation.LastUpdate.ShouldBeCloseTo(DateTime.Now, 100);
+			_personValidation.LastUpdate.ShouldBeCloseTo(DateTime.Now, MillisecondsTimeout);
 	        foreach (var item in _personValidation.Validations)
 	        {
-		        item.LastUpdate.ShouldBeCloseTo(DateTime.Now, 100);
+		        item.LastUpdate.ShouldBeCloseTo(DateTime.Now, MillisecondsTimeout);
 	        }
 		}
 
@@ -102,10 +107,10 @@ namespace SimpleCompositeValidation.UnitTests
             _personValidation.Failures.Single(x => x.GroupName == nameof(Person.BirthDate))
                 .Validation.ShouldBeOfType<MustValidation<DateTime>>();
 
-	        _personValidation.LastUpdate.ShouldBeCloseTo(DateTime.Now, 100);
+	        _personValidation.LastUpdate.ShouldBeCloseTo(DateTime.Now, MillisecondsTimeout);
 	        foreach (var item in _personValidation.Validations)
 	        {
-		        item.LastUpdate.ShouldBeCloseTo(DateTime.Now, 100);
+		        item.LastUpdate.ShouldBeCloseTo(DateTime.Now, MillisecondsTimeout);
 	        }
 		}
 
@@ -135,10 +140,10 @@ namespace SimpleCompositeValidation.UnitTests
             _personValidation.Failures.Single(x => x.GroupName == nameof(Person.LastName))
                 .Validation.ShouldBeOfType<NullValidation>();
 
-	        _personValidation.LastUpdate.ShouldBeCloseTo(DateTime.Now, 100);
+	        _personValidation.LastUpdate.ShouldBeCloseTo(DateTime.Now, MillisecondsTimeout);
 	        foreach (var item in _personValidation.Validations)
 	        {
-		        item.LastUpdate.ShouldBeCloseTo(DateTime.Now, 100);
+		        item.LastUpdate.ShouldBeCloseTo(DateTime.Now, MillisecondsTimeout);
 	        }
 		}
 
@@ -407,7 +412,434 @@ namespace SimpleCompositeValidation.UnitTests
 		    footballTeamValidation.Failures.First().Message.ShouldBe(maximumPlayersMessage);
 	    }
 
-		private class Person
+        [Fact]
+        public void Update_NotNullAndNullForEach_RaisesErrors()
+        {
+
+
+            var footballTeamValidation = new CompositeValidation<FootballTeam>()
+                .NotNullForEach("Players", x => x.Players.Select(y => y.LastName))
+                .NullForEach("Players", x => x.Players);
+
+            var footballTeam = new FootballTeam()
+            {
+                Name = "Liverpool 2005",
+                Players = new List<Person>()
+                {
+                    new Person()
+                    {
+                        FirstName = "Jerzy",
+                        LastName = "Dudek"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Steve",
+                        LastName = "Finnan"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Jamie",
+                        LastName = "Carragher"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Sami",
+                        LastName = "Hyypia"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Djimi",
+                        LastName = "Traoré"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Xabi",
+                        LastName = "Alonso"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Luis",
+                        LastName = "García"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Steven",
+                        LastName = "Gerrard"
+                    },
+                    new Person()
+                    {
+                        FirstName = "John",
+                        LastName = "Arne Riise"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Harry",
+                        LastName = "Kewell"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Milan",
+                        LastName = "Baroš"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Hugo",
+                        LastName = null
+                    }
+                }
+            };
+
+            // Act
+            footballTeamValidation.Update(footballTeam);
+
+            // Assert
+            footballTeamValidation.IsValid.ShouldBeFalse();
+            footballTeamValidation.Failures.Count.ShouldBe(2);
+        }
+
+
+        [Fact]
+        public void Update_MinimumAndMaximumSizeForEach_RaisesErrors()
+        {
+
+            var footballTeamValidation = new CompositeValidation<FootballTeam>()
+                .MinimumLengthForEach("Players", x => x.Players.Select(y => y.LastName), 5)
+                .MaximumLengthForEach("Players", x => x.Players.Select(y => y.FirstName), 5);
+
+            var footballTeam = new FootballTeam()
+            {
+                Name = "Liverpool 2005",
+                Players = new List<Person>()
+                {
+                    new Person()
+                    {
+                        FirstName = "Jerzy",
+                        LastName = "Dudek"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Steve",
+                        LastName = "Finnan"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Jamie",
+                        LastName = "Carragher"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Sami",
+                        LastName = "Hyypia"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Djimi",
+                        LastName = "Traoré"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Xabi",
+                        LastName = "Alonso"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Luis",
+                        LastName = "García"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Steven",
+                        LastName = "Gerrard"
+                    },
+                    new Person()
+                    {
+                        FirstName = "John",
+                        LastName = "Arne Riise"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Harry",
+                        LastName = "Kewell"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Milan",
+                        LastName = "Baroš"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Hugooool",
+                        LastName = "Jose"
+                    }
+                }
+            };
+
+            // Act
+            footballTeamValidation.Update(footballTeam);
+
+            // Assert
+            footballTeamValidation.IsValid.ShouldBeFalse();
+            footballTeamValidation.Failures.Count.ShouldBe(2);
+        }
+
+
+        [Fact]
+        public void Update_RegExAndEmailForEach_RaisesErrors()
+        {
+
+            var footballTeamValidation = new CompositeValidation<FootballTeam>()
+                .EmailForEach("Players", x => x.Players.Select(y => y.LastName))
+                .RegExForEach("Players", x => x.Players.Select(y => y.FirstName), "^[a-zA-Z]+$");
+
+            var footballTeam = new FootballTeam()
+            {
+                Name = "Liverpool 2005",
+                Players = new List<Person>()
+                {
+                    new Person()
+                    {
+                        FirstName = "Jerzy",
+                        LastName = "Dudek"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Steve",
+                        LastName = "Finnan"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Jamie",
+                        LastName = "Carragher"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Sami",
+                        LastName = "Hyypia"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Djimi",
+                        LastName = "Traoré"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Xabi",
+                        LastName = "Alonso"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Luis",
+                        LastName = "García"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Steven",
+                        LastName = "Gerrard"
+                    },
+                    new Person()
+                    {
+                        FirstName = "John",
+                        LastName = "Arne Riise"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Harry",
+                        LastName = "Kewell"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Milan",
+                        LastName = "Baroš"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Hugooool9",
+                        LastName = "Jose"
+                    }
+                }
+            };
+
+            // Act
+            footballTeamValidation.Update(footballTeam);
+
+            // Assert
+            footballTeamValidation.IsValid.ShouldBeFalse();
+            footballTeamValidation.Failures.Count.ShouldBe(2);
+        }
+
+
+        [Fact]
+        public void Update_NotEmptyForEach_NoErrors()
+        {
+
+            var footballTeamValidation = new CompositeValidation<FootballTeam>()
+                .NotEmptyForEach("Players", x => x.Players.Select(y => y.LastName));
+            
+
+            var footballTeam = new FootballTeam()
+            {
+                Name = "Liverpool 2005",
+                Players = new List<Person>()
+                {
+                    new Person()
+                    {
+                        FirstName = "Jerzy",
+                        LastName = "Dudek"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Steve",
+                        LastName = "Finnan"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Jamie",
+                        LastName = "Carragher"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Sami",
+                        LastName = "Hyypia"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Djimi",
+                        LastName = "Traoré"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Xabi",
+                        LastName = "Alonso"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Luis",
+                        LastName = "García"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Steven",
+                        LastName = "Gerrard"
+                    },
+                    new Person()
+                    {
+                        FirstName = "John",
+                        LastName = "Arne Riise"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Harry",
+                        LastName = "Kewell"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Milan",
+                        LastName = "Baroš"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Hugooool9",
+                        LastName = "Jose"
+                    }
+                }
+            };
+
+            // Act
+            footballTeamValidation.Update(footballTeam);
+
+            // Assert
+            footballTeamValidation.IsValid.ShouldBeTrue();
+            footballTeamValidation.Failures.Count.ShouldBe(0);
+        }
+
+
+        [Fact]
+        public void Update_MustAndNotMust_NoErrors()
+        {
+
+            var footballTeamValidation = new CompositeValidation<FootballTeam>()
+                .MustForEach("Players", x => x.Players, x => x?.FirstName != null)
+                .MustNotForEach("Players", x => x.Players, x => x?.LastName == null);
+
+            var footballTeam = new FootballTeam()
+            {
+                Name = "Liverpool 2005",
+                Players = new List<Person>()
+                {
+                    new Person()
+                    {
+                        FirstName = "Jerzy",
+                        LastName = "Dudek"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Steve",
+                        LastName = "Finnan"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Jamie",
+                        LastName = "Carragher"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Sami",
+                        LastName = "Hyypia"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Djimi",
+                        LastName = "Traoré"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Xabi",
+                        LastName = "Alonso"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Luis",
+                        LastName = "García"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Steven",
+                        LastName = "Gerrard"
+                    },
+                    new Person()
+                    {
+                        FirstName = "John",
+                        LastName = "Arne Riise"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Harry",
+                        LastName = "Kewell"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Milan",
+                        LastName = "Baroš"
+                    },
+                    new Person()
+                    {
+                        FirstName = "Hugo",
+                        LastName = "Jose"
+                    }
+                }
+            };
+
+            // Act
+            footballTeamValidation.Update(footballTeam);
+
+            // Assert
+            footballTeamValidation.IsValid.ShouldBeTrue();
+            footballTeamValidation.Failures.Count.ShouldBe(0);
+        }
+
+
+
+        private class Person
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }

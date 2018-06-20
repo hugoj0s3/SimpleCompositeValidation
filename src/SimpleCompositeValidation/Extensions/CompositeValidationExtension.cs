@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SimpleCompositeValidation.Base;
 using SimpleCompositeValidation.Validations;
 using SimpleCompositeValidation.Validations.Collections;
@@ -28,6 +29,17 @@ namespace SimpleCompositeValidation.Extensions
             thisValidation.Add(new NullValidation(groupName, default(object), formatMessage, severity, false), member);
             return thisValidation;
         }
+
+        public static ICompositeValidation<T> NotNullForEach<T,TMember>(this ICompositeValidation<T> thisValidation,
+            string groupName,
+            Func<T, IEnumerable<TMember>> member,
+            string formatMessage = "{0} must not be null",
+            int severity = 1)
+        {
+            thisValidation.AddForEach(new NullValidation(groupName, default(object), formatMessage, severity, false), x => member.Invoke(x).Cast<object>());
+            return thisValidation;
+        }
+
         /// <summary>
         /// Shortcut to add a NullValidation that accept null
         /// </summary>
@@ -45,6 +57,17 @@ namespace SimpleCompositeValidation.Extensions
             int severity = 1)
         {
             thisValidation.Add(new NullValidation(groupName, default(object), formatMessage, severity, true), member);
+            return thisValidation;
+        }
+
+
+        public static ICompositeValidation<T> NullForEach<T, TMember>(this ICompositeValidation<T> thisValidation,
+             string groupName,
+             Func<T, IEnumerable<TMember>> member,
+             string formatMessage = "{0} must be null",
+             int severity = 1)
+        {
+            thisValidation.AddForEach(new NullValidation(groupName, default(object), formatMessage, severity, true), x => member.Invoke(x).Cast<object>());
             return thisValidation;
         }
 
@@ -71,6 +94,17 @@ namespace SimpleCompositeValidation.Extensions
             return thisValidation;
         }
 
+        public static ICompositeValidation<T> MustForEach<T, TMember>(this ICompositeValidation<T> thisValidation,
+          string groupName,
+          Func<T, IEnumerable<TMember>> member,
+          Func<TMember, bool> rule,
+          string formatMessage = "{0} is not valid",
+          int severity = 1)
+        {
+            thisValidation.AddForEach(new MustValidation<TMember>(groupName, rule), member);
+            return thisValidation;
+        }
+
         /// <summary>
         /// Short to add a MustValidation
         /// </summary>
@@ -94,6 +128,17 @@ namespace SimpleCompositeValidation.Extensions
             return thisValidation;
         }
 
+        public static ICompositeValidation<T> MustNotForEach<T, TMember>(this ICompositeValidation<T> thisValidation,
+            string groupName,
+            Func<T, IEnumerable<TMember>> member,
+            Func<TMember, bool> rule,
+            string formatMessage = "{0} is not valid",
+            int severity = 1)
+        {
+            thisValidation.AddForEach(new MustNotValidation<TMember>(groupName, rule), member);
+            return thisValidation;
+        }
+
         /// <summary>
         /// Shortcut to add a StringMinimumLengthValidation
         /// </summary>
@@ -113,6 +158,17 @@ namespace SimpleCompositeValidation.Extensions
             int severity = 1)
         {
             thisValidation.Add(new StringMinimumLengthValidation(groupName, minimumLength, default(string), formatMessage, severity), member);
+            return thisValidation;
+        }
+
+        public static ICompositeValidation<T> MinimumLengthForEach<T>(this ICompositeValidation<T> thisValidation,
+            string groupName,
+            Func<T, IEnumerable<string>> member,
+            int minimumLength,
+            string formatMessage = "{0} requires at least {1} characters",
+            int severity = 1)
+        {
+            thisValidation.AddForEach(new StringMinimumLengthValidation(groupName, minimumLength, default(string), formatMessage, severity), member);
             return thisValidation;
         }
 
@@ -139,19 +195,31 @@ namespace SimpleCompositeValidation.Extensions
             return thisValidation;
         }
 
-		/// <summary>
-		/// Shortcut to add EnumerableMinimumSizeValidation
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <typeparam name="TMember"></typeparam>
-		/// <param name="thisValidation"></param>
-		/// <param name="groupName"></param>
-		/// <param name="member"></param>
-		/// <param name="minimumSize"></param>
-		/// <param name="formatMessage"></param>
-		/// <param name="severity"></param>
-		/// <returns></returns>
-		public static ICompositeValidation<T> MinimumSize<T, TMember>(this ICompositeValidation<T> thisValidation,
+        public static ICompositeValidation<T> MaximumLengthForEach<T>(this ICompositeValidation<T> thisValidation,
+            string groupName,
+            Func<T, IEnumerable<string>> member,
+            int maximumLength,
+            string formatMessage = "{0} the characters length limit is {1}",
+
+            int severity = 1)
+        {
+            thisValidation.AddForEach(new StringMaximumLengthValidation(groupName, maximumLength, default(string), formatMessage, severity), member);
+            return thisValidation;
+        }
+
+        /// <summary>
+        /// Shortcut to add EnumerableMinimumSizeValidation
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="thisValidation"></param>
+        /// <param name="groupName"></param>
+        /// <param name="member"></param>
+        /// <param name="minimumSize"></param>
+        /// <param name="formatMessage"></param>
+        /// <param name="severity"></param>
+        /// <returns></returns>
+        public static ICompositeValidation<T> MinimumSize<T, TMember>(this ICompositeValidation<T> thisValidation,
 		    string groupName,
 		    Func<T, IEnumerable<TMember>> member,
 		    int minimumSize,
@@ -207,6 +275,17 @@ namespace SimpleCompositeValidation.Extensions
             return thisValidation;
         }
 
+        public static ICompositeValidation<T> RegExForEach<T>(this ICompositeValidation<T> thisValidation,
+            string groupName,
+            Func<T, IEnumerable<string>> member,
+            string pattern,
+            string formatMessage = "{0} is not valid",
+            int severity = 1)
+        {
+            thisValidation.AddForEach(new RegExValidation(groupName, pattern, default(string), formatMessage, severity), member);
+            return thisValidation;
+        }
+
         /// <summary>
         ///  Shortcut to add a EmailValidation
         /// </summary>
@@ -227,17 +306,27 @@ namespace SimpleCompositeValidation.Extensions
             return thisValidation;
         }
 
-		/// <summary>
-		/// Shortcut to add a NotEmptyStringValidation
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="thisValidation"></param>
-		/// <param name="groupName"></param>
-		/// <param name="member"></param>
-		/// <param name="formatMessage"></param>
-		/// <param name="severity"></param>
-		/// <returns></returns>
-		public static ICompositeValidation<T> NotEmpty<T>(this ICompositeValidation<T> thisValidation,
+        public static ICompositeValidation<T> EmailForEach<T>(this ICompositeValidation<T> thisValidation,
+            string groupName,
+            Func<T, IEnumerable<string>> member,
+            string formatMessage = "{0} Email is not valid",
+            int severity = 1)
+        {
+            thisValidation.AddForEach(new EmailValidation(groupName, default(string), formatMessage, severity), member);
+            return thisValidation;
+        }
+
+        /// <summary>
+        /// Shortcut to add a NotEmptyStringValidation
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="thisValidation"></param>
+        /// <param name="groupName"></param>
+        /// <param name="member"></param>
+        /// <param name="formatMessage"></param>
+        /// <param name="severity"></param>
+        /// <returns></returns>
+        public static ICompositeValidation<T> NotEmpty<T>(this ICompositeValidation<T> thisValidation,
 			string groupName,
 			Func<T, string> member,
 			string formatMessage = "{0} can not be empty",
@@ -247,18 +336,29 @@ namespace SimpleCompositeValidation.Extensions
 			return thisValidation;
 		}
 
-		/// <summary>
-		/// Short to add a NotEmptyEnumerableValidation
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <typeparam name="TMember"></typeparam>
-		/// <param name="thisValidation"></param>
-		/// <param name="groupName"></param>
-		/// <param name="member"></param>
-		/// <param name="formatMessage"></param>
-		/// <param name="severity"></param>
-		/// <returns></returns>
-		public static ICompositeValidation<T> NotEmpty<T, TMember>(this ICompositeValidation<T> thisValidation,
+
+        public static ICompositeValidation<T> NotEmptyForEach<T>(this ICompositeValidation<T> thisValidation,
+          string groupName,
+          Func<T, IEnumerable<string>> member,
+          string formatMessage = "{0} can not be empty",
+          int severity = 1)
+        {
+            thisValidation.AddForEach(new NotEmptyStringValidation(groupName, default(string), formatMessage, severity), member);
+            return thisValidation;
+        }
+
+        /// <summary>
+        /// Short to add a NotEmptyEnumerableValidation
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TMember"></typeparam>
+        /// <param name="thisValidation"></param>
+        /// <param name="groupName"></param>
+        /// <param name="member"></param>
+        /// <param name="formatMessage"></param>
+        /// <param name="severity"></param>
+        /// <returns></returns>
+        public static ICompositeValidation<T> NotEmpty<T, TMember>(this ICompositeValidation<T> thisValidation,
 		    string groupName,
 		    Func<T, IEnumerable<TMember>> member,
 		    string formatMessage = "{0} can not be empty",
