@@ -13,7 +13,7 @@ namespace SimpleCompositeValidation.UnitTests
 {
     public class ManyValidationsTest
     {
-        private readonly CompositeValidation<Person> _personValidation = new CompositeValidation<Person>()
+        private readonly ICompositeValidation<Person> _personValidation = new CompositeValidation<Person>()
             .NotNull(nameof(Person.FirstName), x => x.FirstName)
             .MinimumLength(nameof(Person.FirstName), x => x.FirstName, 3)
             .MaximumLength(nameof(Person.FirstName), x => x.FirstName, 10)
