@@ -90,7 +90,7 @@ namespace SimpleCompositeValidation.Extensions
             string formatMessage = "{0} is not valid",
             int severity = 1)
         {
-            thisValidation.Add(new MustValidation<TMember>(groupName, rule), member);
+            thisValidation.Add(new MustValidation<TMember>(groupName, rule, default(TMember), formatMessage, severity), member);
             return thisValidation;
         }
 
@@ -101,7 +101,7 @@ namespace SimpleCompositeValidation.Extensions
           string formatMessage = "{0} is not valid",
           int severity = 1)
         {
-            thisValidation.AddForEach(new MustValidation<TMember>(groupName, rule), member);
+            thisValidation.AddForEach(new MustValidation<TMember>(groupName, rule, default(TMember), formatMessage, severity), member);
             return thisValidation;
         }
 
@@ -124,7 +124,7 @@ namespace SimpleCompositeValidation.Extensions
             string formatMessage = "{0} is not valid",
             int severity = 1)
         {
-            thisValidation.Add(new MustNotValidation<TMember>(groupName, rule), member);
+            thisValidation.Add(new MustNotValidation<TMember>(groupName, rule, default(TMember), formatMessage, severity), member);
             return thisValidation;
         }
 
@@ -135,7 +135,7 @@ namespace SimpleCompositeValidation.Extensions
             string formatMessage = "{0} is not valid",
             int severity = 1)
         {
-            thisValidation.AddForEach(new MustNotValidation<TMember>(groupName, rule), member);
+            thisValidation.AddForEach(new MustNotValidation<TMember>(groupName, rule, default(TMember), formatMessage, severity), member);
             return thisValidation;
         }
 

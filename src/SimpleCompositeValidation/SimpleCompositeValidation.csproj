@@ -12,8 +12,9 @@
     <PackageTags>Validation DDD Lite Composition Lite</PackageTags>
     <Title>Simple Composite Validation</Title>
     <Product>Simple Composite Validation</Product>
-    <PackageReleaseNotes>Including group name on composite validation constructors.</PackageReleaseNotes>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageReleaseNotes>fix bug method extensions Must, MustForEach, MustNot, MustNotForEach</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageVersion>2.0.3</PackageVersion>
   </PropertyGroup>
 
 </Project>
