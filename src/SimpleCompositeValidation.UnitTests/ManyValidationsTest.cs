@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using Shouldly;
 using SimpleCompositeValidation.Base;
-using SimpleCompositeValidation.Exceptions;
 using SimpleCompositeValidation.Extensions;
 using SimpleCompositeValidation.UnitTests.Extensions;
 using SimpleCompositeValidation.Validations;
@@ -15,7 +14,6 @@ namespace SimpleCompositeValidation.UnitTests
 {
     public class ManyValidationsTest
     {
-
 
         private const int MillisecondsTimeout = 500;
 
@@ -244,28 +242,6 @@ namespace SimpleCompositeValidation.UnitTests
 		    validations.Failures.Single(x => x.GroupName == nameof(Person.LastName))
 			    .Validation.ShouldBeOfType<StringMinimumLengthValidation>();
 		}
-
-	    [Fact]
-	    public void UpdatePartially3_UpdatingPartiallyWithNotFoundGroupName_ItThrowValidationsNotFoundException()
-	    {
-		    // Act
-		    Action act = () => _personValidation.Update("##NotFound");
-
-		    // Assert 
-		    act.ShouldThrow<ValidationsNotFoundException>();
-
-	    }
-
-	    [Fact]
-	    public void Update_UpdatingPartiallyWithNotFoundGroupName_ItThrowValidationsNotFoundException()
-	    {
-		    // Act
-		    Action act = () => _personValidation.Update("##NotFound");
-
-		    // Assert 
-		    act.ShouldThrow<ValidationsNotFoundException>();
-
-	    }
 
 	    [Fact]
 	    public void Update_ConfiguringValidationWithAddForEach_ItUpdateTheValidationCorrectly()

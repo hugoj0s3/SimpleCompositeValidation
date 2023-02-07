@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using SimpleCompositeValidation.Base;
-using SimpleCompositeValidation.Exceptions;
 
 namespace SimpleCompositeValidation
 {
@@ -137,12 +136,7 @@ namespace SimpleCompositeValidation
 
 	        var funcValidations = validations.ToList();
 
-	        if (!funcValidations.Any())
-	        {
-		        throw new ValidationsNotFoundException();
-	        }
-
-            foreach (var item in funcValidations)
+	        foreach (var item in funcValidations)
             {
                 var targetMember = func.Invoke(item);
                 item.UpdateAction.Invoke(targetMember);
