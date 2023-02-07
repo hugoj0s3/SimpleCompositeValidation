@@ -12,9 +12,9 @@
     <PackageTags>Validation DDD Lite Composition Lite</PackageTags>
     <Title>Simple Composite Validation</Title>
     <Product>Simple Composite Validation</Product>
-    <PackageReleaseNotes>fix bug method extensions Must, MustForEach, MustNot, MustNotForEach</PackageReleaseNotes>
+    <PackageReleaseNotes>Remove ValidationNotFoundException.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>2.0.3</PackageVersion>
+    <PackageVersion>2.0.4</PackageVersion>
   </PropertyGroup>
 
 </Project>
